@@ -1,0 +1,29 @@
+{
+  "width": 1080,
+  "size_tiers": [44, 38, 32, 26],
+  "font": null,
+  "output_suffix": ".final.jpg",
+  "report": "draw_report.json",
+  "panels": {
+    "panel-01": {
+      "src": "./assets/example-01.raw.jpg",
+      "out": "./out/panel-01.final.jpg",
+      "bubbles": [
+        { "speaker": "m", "x0": 0.06, "y0": 0.05, "x1": 0.50, "y1": 0.32,
+          "text": "波普，最近人人都在聊FDE，它到底是个什么岗位？" },
+        { "speaker": "p", "x0": 0.56, "y0": 0.05, "x1": 0.95, "y1": 0.30,
+          "text": "前沿部署工程师——把AI模型送进客户现场的人。" }
+      ]
+    },
+    "panel-02": {
+      "src": "./assets/example-02.raw.jpg",
+      "out": "./out/panel-02.final.jpg",
+      "bubbles": [
+        { "speaker": "m", "x0": 0.06, "y0": 0.05, "x1": 0.50, "y1": 0.30,
+          "text": "听说这岗位最近火得一塌糊涂？" },
+        { "speaker": "p", "x0": 0.56, "y0": 0.05, "x1": 0.95, "y1": 0.30,
+          "text": "招聘量一年涨了十倍不止，大厂都在抢人。" }
+      ]
+    }
+  }
+}
