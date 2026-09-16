@@ -13,3 +13,4 @@ assets/characters/*.raw.jpg
 *_report.json
 *.ink_snap.npz
 .openclaw/
+stories/*/panels/
