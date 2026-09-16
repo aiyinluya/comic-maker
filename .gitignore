@@ -2,4 +2,9 @@
 __pycache__/
 *.pyc
 comic-studio/
-posts/
+posts/*
+!posts/DECISIONS.md
+!posts/six-topics
+posts/six-topics/*
+!posts/six-topics/LEDGER.md
+!posts/six-topics/MANIFEST.md
