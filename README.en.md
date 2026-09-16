@@ -1,5 +1,7 @@
 # comic-maker
 
+[![smoke](https://github.com/aiyinluya/comic-maker/actions/workflows/smoke.yml/badge.svg)](https://github.com/aiyinluya/comic-maker/actions/workflows/smoke.yml)
+
 Hand-drawn explainer comics, generated as one-click vertical strips. Watch the pipeline produce its own first issue:
 
 ![FDE: The "ground-hugging" engineer](examples/example-longmanga.jpg)

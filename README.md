@@ -1,5 +1,7 @@
 # comic-maker
 
+[![smoke](https://github.com/aiyinluya/comic-maker/actions/workflows/smoke.yml/badge.svg)](https://github.com/aiyinluya/comic-maker/actions/workflows/smoke.yml)
+
 一问一答的手绘科普长漫画流水线。先看产出——这是用它做的第一期：
 
 ![FDE：硅谷杀疯了的「贴地飞行」工程师](examples/example-longmanga.jpg)
