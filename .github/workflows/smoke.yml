@@ -30,8 +30,10 @@ jobs:
           echo "smoke OK"
       - name: Guard against hardcoded absolute paths
         run: |
-          # R16 防回归：核心脚本不许硬编码用户目录（Windows/macOS/Linux 通扫）
-          if grep -rn -E "C:\\\\Users|/home/[a-z]|/Users/" scripts/ --include="*.py" | grep -v "os.environ.get" | grep -v "# default"; then
+          # R16 防回归：核心脚本不许硬编码用户目录。
+          # 白名单：环境变量行（os.environ.get 同行）与 _DEFAULT 常量定义行。
+          if grep -rn -E "C:\\\\Users|/home/[a-z]|/Users/" scripts/ --include="*.py" \
+             | grep -v "os.environ.get" | grep -v "_DEFAULT"; then
             echo "::error::hardcoded absolute path found in scripts/"
             exit 1
           fi
