@@ -14,7 +14,7 @@
 - [x] **3. requirements.txt + GitHub Actions 冒烟**
   - 产出：requirements.txt、.github/workflows/smoke.yml（parse → draw → lint 三段）
   - 验证：本地全链路 PASS；已推送 b75b756
-- [ ] **4. 技能 v2.7 批准**（用户动作：回复「批准 comic-explainer-20260915-5327f7ce07」）
+- [x] **4. 技能 v2.8 生效**（用户 15:35 批准 comic-explainer-20260915-5327f7ce07；apply 前先 revise 同步仓库现状：R1-R16、九步流程、44px 档位口径；技能版 draw_bubbles.py 与仓库版 MD5 一致）
 
 ## 第二档：短期值得
 
