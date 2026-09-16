@@ -1,0 +1,30 @@
+name: smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+      - name: Parse example storyboard (single source of truth)
+        run: python scripts/parse_storyboard.py --storyboard examples/example-storyboard.md --out examples/bubbles.parsed.json
+      - name: Draw bubbles from parsed storyboard
+        run: python scripts/draw_bubbles.py --bubbles examples/bubbles.parsed.json --dir examples/assets
+      - name: Lint drawn panels
+        run: python scripts/lint.py --dir examples/assets --bubbles examples/bubbles.parsed.json
+      - name: Verify outputs
+        run: |
+          test -f examples/assets/panel-01.final.jpg
+          test -f examples/assets/panel-02.final.jpg
+          echo "smoke OK"

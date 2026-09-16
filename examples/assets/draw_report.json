@@ -1,0 +1,32 @@
+{
+  "panel-01": {
+    "out": "examples\\assets\\panel-01.final.jpg",
+    "bubbles": [
+      {
+        "speaker": "m",
+        "size": 44,
+        "lines": 3
+      },
+      {
+        "speaker": "p",
+        "size": 44,
+        "lines": 3
+      }
+    ]
+  },
+  "panel-02": {
+    "out": "examples\\assets\\panel-02.final.jpg",
+    "bubbles": [
+      {
+        "speaker": "m",
+        "size": 44,
+        "lines": 3
+      },
+      {
+        "speaker": "p",
+        "size": 44,
+        "lines": 3
+      }
+    ]
+  }
+}

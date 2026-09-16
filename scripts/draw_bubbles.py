@@ -11,12 +11,14 @@ import json
 import math
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = Path(__file__).parent
 FONT_PATH = r"C:\Windows\Fonts\msyhbd.ttc"
 INK = (40, 44, 50)
 PAPER = (252, 252, 249)
+TEXT_COLOR = (35, 35, 40)
 STROKE_W = 4
 SIZE_TIERS = [44, 38, 32, 26]
 LINE_H = 1.3
@@ -55,6 +57,24 @@ JOBS = {
 }
 
 
+
+FONT_CANDIDATES = [
+    r"C:\Windows\Fonts\msyhbd.ttc",
+    r"C:\Windows\Fonts\msyh.ttc",
+    "/System/Library/Fonts/PINGFANG.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+]
+
+
+def load_font(size, font_path=None):
+    for p in ([font_path] if font_path else []) + FONT_CANDIDATES:
+        try:
+            return ImageFont.truetype(p, size)
+        except OSError:
+            continue
+    raise SystemExit("No CJK font found; see docs/INTEGRATION.md")
+
+
 def jitter_line(d, p0, p1, seed=[0]):
     """带轻微抖动的线段（分段小折线），模拟手绘笔触。"""
     seed[0] += 1
@@ -87,19 +107,20 @@ def wrap(text, font, max_w, probe):
     return lines
 
 
-def draw_m_bubble(d, box):
+def draw_m_bubble(d, box, seed=None):
     """小码：圆角矩形气泡。"""
+    sd = seed if seed is not None else [0]
     x0, y0, x1, y1 = box
     r = 34
     d.rounded_rectangle([x0, y0, x1, y1], radius=r, fill=PAPER, outline=INK, width=4)
     # 手绘感：外沿再描一圈抖动线
-    jitter_line(d, (x0 + r, y0), (x1 - r, y0))
-    jitter_line(d, (x0 + r, y1), (x1 - r, y1))
-    jitter_line(d, (x0, y0 + r), (x0, y1 - r))
-    jitter_line(d, (x1, y0 + r), (x1, y1 - r))
+    jitter_line(d, (x0 + r, y0), (x1 - r, y0), sd)
+    jitter_line(d, (x0 + r, y1), (x1 - r, y1), sd)
+    jitter_line(d, (x0, y0 + r), (x0, y1 - r), sd)
+    jitter_line(d, (x1, y0 + r), (x1, y1 - r), sd)
     # 尾巴（朝左下说话人）
-    jitter_line(d, (x0 + 46, y1 - 4), (x0 + 10, y1 + 52))
-    jitter_line(d, (x0 + 10, y1 + 52), (x0 + 92, y1 - 4))
+    jitter_line(d, (x0 + 46, y1 - 4), (x0 + 10, y1 + 52), sd)
+    jitter_line(d, (x0 + 10, y1 + 52), (x0 + 92, y1 - 4), sd)
 
 
 def jitter_ellipse(d, box, seed):
@@ -190,5 +211,88 @@ def main():
     print("saved v8_report.json")
 
 
+
+def draw_from_storyboard(bubbles_path, panel_dir):
+    """单一事实源直读：parse_storyboard.py 产出的 bubbles.json → 绘制 → final。
+    y1=None 时按文字需求推导气泡高度（44px 档优先，放不下逐级降档）。
+    过场格不在 bubbles.json 中，调用方自行把 raw 拷为 final 占位。"""
+    import json as _json
+    cfg = _json.loads(Path(bubbles_path).read_text(encoding="utf-8"))
+    panel_dir = Path(panel_dir)
+    probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+    seed = [0]
+    report = {}
+    for key, bubbles in cfg.items():
+        src_img = panel_dir / f"{key}.raw.jpg"
+        if not src_img.exists():
+            alt = panel_dir.parent / f"{key}.raw.jpg"
+            if alt.exists():
+                src_img = alt
+        img = Image.open(src_img).convert("RGB")
+        if img.size[0] != 1080:
+            img = img.resize((1080, round(img.size[1] * 1080 / img.size[0])), Image.LANCZOS)
+        W, H = img.size
+        _snap_gray = np.asarray(img.convert("L")).copy()
+        d = ImageDraw.Draw(img)
+        rb = []
+        for b in bubbles:
+            x0, y0, x1 = int(b[0] * W), int(b[1] * H), int(b[2] * W)
+            sp, text = b[4], b[5]
+            iw = (x1 - x0) - PAD * 2
+            size = None
+            for F in SIZE_TIERS:
+                fnt = load_font(F)
+                lines = wrap(text, fnt, iw, probe)
+                lh = F * LINE_H
+                needed = int(len(lines) * lh + PAD * 2)
+                if y0 + needed <= int(0.55 * H):
+                    size, font, yy1 = F, fnt, y0 + needed
+                    break
+            if size is None:
+                F = SIZE_TIERS[-1]
+                size, font = F, load_font(F)
+                lines = wrap(text, font, iw, probe)
+                lh = size * LINE_H
+                yy1 = y0 + int(len(lines) * lh + PAD * 2)
+            ih = (yy1 - y0) - PAD * 2
+            box = (x0, y0, x1, yy1)
+            if sp == "m":
+                draw_m_bubble(d, box, seed)
+            else:
+                draw_p_bubble(d, box, seed)
+            cy = y0 + PAD + ih / 2 - len(lines) * lh / 2 + lh / 2
+            for ln in lines:
+                d.text(((x0 + x1) / 2, cy), ln, font=font, fill=TEXT_COLOR, anchor="mm")
+                cy += lh
+            rb.append({"speaker": sp, "size": size, "lines": len(lines)})
+        out = panel_dir / f"{key}.final.jpg"
+        img.save(out, quality=95)
+        try:
+            np.savez_compressed(panel_dir / f"{key}.ink_snap.npz",
+                                gray=_snap_gray)
+        except Exception:
+            pass
+        report[key] = {"out": str(out), "bubbles": rb}
+        print(key, _json.dumps(rb, ensure_ascii=False))
+    (panel_dir / "draw_report.json").write_text(
+        _json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"single-source draw complete -> {panel_dir}")
+
+
+def main_cli():
+    import argparse
+    ap = argparse.ArgumentParser(description="Draw speech bubbles & text on bubble-free panels.")
+    ap.add_argument("--bubbles", help="bubbles.json from parse_storyboard.py")
+    ap.add_argument("--dir", help="directory containing <key>.raw.jpg")
+    ap.add_argument("--legacy", action="store_true", help="run built-in JOBS demo")
+    a = ap.parse_args()
+    if a.bubbles:
+        if not a.dir:
+            ap.error("--dir is required with --bubbles")
+        draw_from_storyboard(a.bubbles, a.dir)
+    else:
+        main()
+
+
 if __name__ == "__main__":
-    main()
+    main_cli()
