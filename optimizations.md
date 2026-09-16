@@ -18,8 +18,9 @@
 
 ## 第二档：短期值得
 
-- [ ] **5. 表情/姿态表**：Seedream 全通道（t2i/i2i/短提示词）持续 500，确诊服务端故障挂起；恢复后运行 gen_sheets_i2i.py（预案就绪）
-  - 预案：scripts 已就绪（gen_topic.py 模式），五件套定义见 assets/characters/PLAN.md
+- [x] **5. 表情/动作/转面三表**：assets/characters/sheet-{expressions,poses,turnaround}.jpg
+  - 根因（R16）：seedream 直调不收本地参考图路径，必须经 upload-mix→OSS URL；scripts/gen_sheets.py 复用 gen_one 全通
+  - 验证：三表目检双人造型全对（表情表 v2 重做：波普不再被画成趴肩道具）
 - [x] **6. 文章 → 分镜自动转换**：scripts/article_to_storyboard.py
 - [x] **7. 修字闭环**：scripts/fix_panel.py（OCR 比对 → 整句重写 → 2 轮失败转 patch_text）
 - [x] **8. 定妆照本地化**：assets/characters/ + gen_panel --ref-local（base64 直传）
@@ -33,4 +34,4 @@
 
 ## 执行记录
 
-- 2026-09-16：#1/#2/#3 完成并推送；#5 因 Seedream 500 挂起；#6-#12 完成
+- 2026-09-16：#1/#2/#3 完成并推送（b75b756）；#6-#12 完成并推送（509aa86）；#5 角色三表完成（gen_one 路径打通，R16 登记）
