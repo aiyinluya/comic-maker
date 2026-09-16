@@ -65,6 +65,12 @@ python scripts/stack.py --config stack.json
 ## 目录
 
 ```
+output/                        ★ 最终成品（发布即用）
+  long-form/                   12 部竖版长图，按作品编号命名
+    01-mcp/01-mcp.png          主图（PNG）+ -share.jpg 轻量分享版
+    ...
+  panels/                      单格成品图（按作品分子目录，供按格发布/博客用）
+process/                       过程图：空场景 raw / 修字轮次存档（不进发布）
 scripts/
   draw_bubbles.py    气泡与文字绘制（本仓库的核心）
   gen_panel.py       空场景出格
@@ -78,6 +84,10 @@ docs/
 SKILL.md             Agent 技能规范（Claude / Codex / OpenClaw 通用格式）
 examples/            可直接运行的示例
 ```
+
+过程与成品分离：`output/` 里的每一张图都可直接发布；`process/` 里的每
+一张图都能回答「这张图是怎么一步步变成成品的」。生成新的漫画时，成品
+自动落入 `output/`，过程图留在工作目录，互不污染。
 
 ## 给想改代码的人
 
