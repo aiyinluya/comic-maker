@@ -14,7 +14,7 @@ Anyone who has tried AI-generated comics hits the same three walls:
 2. **Text overflowing bubbles**. Lines spill outside the bubble outline.
 3. **Inconsistent font sizes**. One panel has huge text, the next tiny text.
 
-We spent five iterations on a "generate bubble + code-erase-and-retypeset" approach. Each version fixed something and broke something else. Every failure is documented in [docs/ROOT-CAUSES.md](docs/ROOT-CAUSES.md) — 14 real root causes, each with symptoms → cause → fix → code location.
+We spent five iterations on a "generate bubble + code-erase-and-retypeset" approach. Each version fixed something and broke something else. Every failure is documented in [docs/ROOT-CAUSES.md](docs/ROOT-CAUSES.md) — 16 real root causes, each with symptoms → cause → fix → code location.
 
 The conclusion we reached is simple: **as long as the bubble itself is model-generated, these problems can only be mitigated, never eliminated.** A model-drawn bubble carries no geometric guarantee — where the text can go is guesswork.
 
@@ -23,6 +23,23 @@ So this repo took a different path: **the model draws only the scene; bubbles an
 - Scene: the model generates a bubble-free, text-free panel (characters locked via a reference sheet);
 - Bubbles: Pillow draws rounded rectangles (the asker) and ellipse-with-tail (the answerer), with subtle stroke jitter to mimic hand-drawn linework;
 - Text: rendered at a globally unified size tier — gibberish is impossible by construction, and font size can only be consistent.
+
+## More than a script
+
+The pipeline now ships with a full toolbelt:
+
+| Capability | Script | Notes |
+|---|---|---|
+| Single-source storyboard | `parse_storyboard.py` | Parses storyboard.md into bubble config; draw_bubbles reads it via `--bubbles` |
+| Output QC | `lint.py` | Bubble overflow / font-tier uniformity / character-presence checks; CI-ready |
+| Article → storyboard | `article_to_storyboard.py` | Converts an existing article into a storyboard draft |
+| Text-fix loop | `fix_panel.py` | OCR compare → whole-sentence rewrite → escalate to programmatic retypeset |
+| Local ref sheets | `gen_panel.py --ref-local` | Uploads a local reference sheet to OSS automatically |
+| Parallel rendering | `batch_parallel.py` | Thread-pool batch panel generation, idempotent skip, per-panel retry |
+| Style as asset | `styles/manshi.yaml` | Style DNA, character markers, bubble and strip params in one file |
+| Character sheets | `gen_sheets.py` | Expression / pose / turnaround sheets in one command (see assets/characters/) |
+
+All 12 finished strips and 6 companion articles live in the [output/index.html](output/index.html) gallery index.
 
 ## Pipeline
 
@@ -51,7 +68,14 @@ python scripts/comic.py ensure-character --name xiaoma --slug xiaoma \
 # Generate a bubble-free scene (prompt hard-bans bubbles and text)
 python scripts/gen_panel.py "<scene prompt>" "<ref-sheet-URL>" --raw panels/01.raw.jpg
 
-# Draw bubbles & dialogue (positions and lines live in a JSON config)
+# Draw bubbles & dialogue (storyboard md as single source of truth, recommended)
+python scripts/parse_storyboard.py --storyboard sb.md --out bubbles.json
+python scripts/draw_bubbles.py --bubbles bubbles.json --dir panels/
+
+# QC the output (overflow / font tiers / character presence)
+python scripts/lint.py --config examples/bubbles.example.json
+
+# Or the classic way: positions and lines hand-written in a JSON config
 python scripts/draw_bubbles.py --config examples/bubbles.example.json
 
 # Or read directly from a parsed storyboard (single source of truth)
@@ -68,23 +92,29 @@ The image backend is not hard-wired: OpenAI-compatible APIs, ComfyUI, or AutoGLM
 
 ```
 output/                        ★ finished art (publish-ready)
+  index.html                   gallery index for all 12 works
   long-form/                   12 vertical strips, numbered by work
   panels/                      final single panels, grouped per work
-process/                       raw scenes / retypeset rounds (not for publishing)
+articles/                      6 companion articles + index / glossary / ledger
+assets/characters/             ref sheets + expression / pose / turnaround sheets
+styles/                        style DNA as params (manshi.yaml)
 scripts/
   draw_bubbles.py              bubble & text rendering (the core)
   parse_storyboard.py          storyboard markdown -> bubble config
-  gen_panel.py                 scene generation one-shot
+  lint.py                      output QC (overflow / tiers / presence)
+  gen_panel.py                 scene generation one-shot (--ref-local supported)
+  batch_parallel.py            parallel batch rendering
+  gen_sheets.py                character sheet trio generator
+  article_to_storyboard.py     article -> storyboard draft
+  fix_panel.py                 OCR-compare -> rewrite -> escalate loop
   comic.py                     character registry & reference sheets
   stack.py                     strip assembly
-  fix_panel.py                 OCR-compare -> rewrite -> escalate loop
-  lint.py                      geometry & font-tier checks
   patch_text.py                single-bubble retypeset
-  archive/                     superseded approaches, kept for reference
 docs/
-  ROOT-CAUSES.md               14 root causes — the most valuable file here
+  ROOT-CAUSES.md               16 root causes — the most valuable file here
   INTEGRATION.md               image backends, fonts, publishing targets
 SKILL.md                       Agent skill spec (Claude / Codex / OpenClaw)
+optimizations.md               12-item engineering optimization ledger
 examples/                      runnable examples
 ```
 

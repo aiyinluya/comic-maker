@@ -8,3 +8,5 @@ posts/*
 posts/six-topics/*
 !posts/six-topics/LEDGER.md
 !posts/six-topics/MANIFEST.md
+assets/characters/*.raw.jpg
+*-smoke*
