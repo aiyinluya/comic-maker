@@ -13,13 +13,19 @@
 """
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-REC = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-image-recognition\image-recognition.py"
-UP = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\upload-mix.py"
-EDIT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-image-edit\image-edit.py"
+# 后端脚本可经环境变量覆盖（与 gen_panel.py 同约定）
+# default: 本机 AutoGLM 技能脚本（CI 守护只许 _DEFAULT 常量形式）
+_REC_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-image-recognition\image-recognition.py"
+_UP_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\upload-mix.py"
+_EDIT_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-image-edit\image-edit.py"
+REC = os.environ.get("COMIC_RECOG", _REC_DEFAULT)
+UP = os.environ.get("COMIC_UPLOAD", _UP_DEFAULT)
+EDIT = os.environ.get("COMIC_EDIT", _EDIT_DEFAULT)
 MAX_ROUNDS = 2
 
 

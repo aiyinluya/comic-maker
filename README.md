@@ -95,26 +95,30 @@ output/                        ★ 最终成品（发布即用）
     01-mcp/01-mcp.png          主图（PNG）+ -share.jpg 轻量分享版
     ...
   panels/                      单格成品图（按作品分子目录，供按格发布/博客用）
+stories/                       ★ 12 部作品的复现分镜包（每话 storyboard.md）
 articles/                      6 篇同源科普文章 + 索引 / 术语表 / 台账
 assets/characters/             定妆照 + 表情表 / 动作表 / 转面图
-styles/                        画风 DNA 参数化（manshi.yaml）
+data/characters/               角色档案（comic.py 数据落点，COMIC_DATA 可改）
+styles/                        画风 DNA 参数化（manshi.yaml，--style 消费）
 scripts/
-  draw_bubbles.py    气泡与文字绘制（本仓库的核心）
+  draw_bubbles.py    气泡与文字绘制（本仓库的核心，支持 --style）
   parse_storyboard.py  分镜 md → 气泡配置（单一事实源）
   lint.py            出图质检（越界 / 字号 / 要素）
-  gen_panel.py       空场景出格（支持 --ref-local 本地参考图）
+  gen_panel.py       空场景出格（--ref-local / COMIC_SEEDREAM 等环境变量可配）
   batch_parallel.py  并行批量出格（线程池 + 断点续跑）
   gen_sheets.py      角色设定集三表生成
   article_to_storyboard.py  文章 → 分镜草稿
   fix_panel.py       修字闭环（OCR → 重写 → 转程序化）
-  comic.py           角色档案、定妆照登记
+  comic.py           角色档案、定妆照登记（数据落 data/，COMIC_DATA 可改）
   stack.py           长图拼装
   patch_text.py      单气泡改字（微调用）
 docs/
   ROOT-CAUSES.md     十六条根因登记表，本仓库最值得读的文件
   INTEGRATION.md     图像后端、字体、发布平台适配
-SKILL.md             Agent 技能规范（Claude / Codex / OpenClaw 通用格式）
-optimizations.md     12 项工程化优化台账（勾选 + 证据）
+SKILL.md             Agent 技能规范（v2.8 九步流水线）
+CONTRIBUTING.md     贡献指南（两条铁律 + 自检清单）
+CHANGELOG.md         版本日志（v2.6 起）
+optimizations.md     工程化优化台账（勾选 + 证据）
 examples/            可直接运行的示例
 ```
 

@@ -1,0 +1,16 @@
+{
+  "name": "波普",
+  "slug": "popu",
+  "role": "解答者",
+  "identity_markers": "白色胶囊形小机器人，黑面罩蓝色圆眼，头顶小天线，橙色徽章",
+  "versions": [
+    "base",
+    "manga"
+  ],
+  "refs": {
+    "base": "ref.jpg",
+    "manga": "assets/characters/popu-ref-manga.jpg"
+  },
+  "brand": "码事漫谈（公众号）",
+  "ref_note": "manga 版定妆照已随仓库分发；base 版为历史初稿"
+}

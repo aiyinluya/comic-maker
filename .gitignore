@@ -10,3 +10,6 @@ posts/six-topics/*
 !posts/six-topics/MANIFEST.md
 assets/characters/*.raw.jpg
 *-smoke*
+*_report.json
+*.ink_snap.npz
+.openclaw/

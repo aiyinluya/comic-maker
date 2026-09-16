@@ -3,15 +3,17 @@
 """comic-maker 助手脚本：角色档案、定妆照登记、页面记录、尺寸与拼接。
 
 纯 Python 标准库；Pillow 仅在 fit-width / stack 时按需导入。
-所有路径相对当前工作目录下的 comic-studio/，请在 workspace 根目录运行。
+数据落在仓库内 data/ 目录（characters/ = 角色档案，posts/ = 台账）。
+可用 COMIC_DATA 环境变量改数据根目录，默认当前工作目录下的 data/。
 """
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
 
-ROOT = Path("comic-studio")
+ROOT = Path(os.environ.get("COMIC_DATA", "data"))
 CHARACTERS = ROOT / "characters"
 POSTS = ROOT / "posts"
 

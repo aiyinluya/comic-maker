@@ -1,75 +1,70 @@
 ---
 name: "comic-maker"
-description: "生成公众号手绘长漫画：7+1 格问答流水线，定妆照一致性、逐字质检、修字与整泡重排、长图拼装。画漫画时用。"
+description: "生成公众号手绘长漫画 v2.8：分镜单一事实源 → 空场景出格（定妆照锁角色）→ 代码绘气泡（构造上根除溢出与乱码）→ lint 质检 → 并行出图 → 长图拼装。画漫画时用。"
 ---
 
-# Comic Maker — 手绘长漫画流水线（v2）
+# Comic Maker — 手绘长漫画流水线（v2.8 · 结构派）
 
-把「一个知识点」变成「一部 7+1 格手绘长漫画」：分镜问答 → 角色一致性出格 → 逐字质检 → 修字/整泡重排 → 长图拼装 → 公众号交付。固定常驻角色 CP：小柯（提问者）× 波普（解答者），也可登记新角色。
+把「一个知识点」变成「一部 8 格手绘长漫画」：分镜先行 → 角色档案 → 分镜解析 → 空场景出格 → 质检 → 代码绘气泡 → 修字闭环 → 拼装交付。常驻角色：**小码**（提问者，原名小柯，形象不变）× **波普**（解答者）。
 
-**核心纪律**（借鉴 agent-mangaka-forge，MIT）：**没有定妆照，不许出格。**
+**核心架构**：生成模型只画**无气泡、无文字的空场景**；气泡与文字全部由代码绘制（`draw_bubbles.py`）——几何确定性，溢出与字号漂移从构造上不可能发生。
 
-## 目录结构（workspace 相对路径）
+**铁律**：
+1. **没有定妆照，不许出格。**
+2. **没有用户确认的文案，不许开画。**
+3. **气泡与文字一律代码绘制**：出格提示词含「画面中绝对不出现任何对话气泡，不出现任何文字、字母、数字、符号」。
+4. **文字 UNIFIED**：44px 优先档位（1080 宽成品坐标系，极端兜底 38/32/26）、微软雅黑 Bold、色 (35,35,40)、行距 1.3、边距 26px；说话人区分只靠气泡形状。
+5. **品牌规范**：页脚唯一「出自公众号：码事漫谈」；无话数编号。
 
-```
-comic-studio/
-  characters/<slug>/manifest.json   # 角色档案：name/slug/role/identity_markers/versions/refs
-  characters/<slug>/ref.jpg         # 定妆照扁平版（base 版本）
-  characters/<slug>/ref-manga.jpg   # 手绘漫画版（manga 版本）
-  posts/<yyyy-mm-dd>-<slug>/
-    storyboard.md                   # 分镜脚本（先行锁定）
-    panels/panel-NN.raw.jpg         # 1600px 出格原图（按轮存档 *.fixed*.raw.jpg）
-    panels/panel-NN.jpg             # 900px 终版
-    long-manga.jpg                  # 拼装长图（标题区 + 全格）
-    post.md / preview.html          # 公众号稿 / 阅读页
-    panel.json                      # 页面登记
-```
-
-## 1. 流水线七步（长漫画标准流程）
-
-1. **分镜先行**：拆 7 组一问一答（过场条格按需），写 `storyboard.md`。气泡文案纪律：每句 ≤22 字、不用嵌套引号、不用长句（引号嵌套是乱码重灾区）
-2. **定妆照**：新画风先经 image-edit 转风 + 视觉复核后入库（register-ref --version manga）；已有版本直接复用
-3. **出格**：`scripts/gen_panel.py "<提示词>" "<参考图URL>" --raw panels\panel-NN.raw.jpg --fit panels\panel-NN.jpg`（生成→解析→下载→900px 一条龙，URL 不经过对话层防截断）
-4. **质检**：逐格视觉/识别复核——气泡逐字转录 vs 分镜目标句、角色要素（眼镜/卫衣/天线/徽章）、有无水印；多格可拼批发
-5. **修字**：错字先走 image-edit 定点修字（只改气泡、其他不变）；**同一气泡连续 2 轮失败 → 立即转 `patch_text.py` 程序化整泡重排**（擦除气泡内文字 + 微软雅黑重排正确句，文字零错误）
-6. **拼装**：`scripts/stack.py`（标题区 + 8 格竖拼 → long-manga.jpg）；程序化校验：分段方差 >8 无空白段、尺寸 900 宽
-7. **交付**：post.md（分节导览+知识胶囊+互动）+ preview.html（阅读页）+ 台账（LEDGER.md）
-
-## 2. 角色与定妆照
-
-- 登记：`comic.py ensure-character --name 小柯 --slug xiaoke --role 提问者 --markers "..."`
-- 出格提示词必须**内联完整身份标记**（不能只写"保持参考图造型"——实测会丢眼镜/变色）
-- 角色任何持久变化（换装/进化）→ register-ref 新建版本，绝不覆盖 base
-- 参考图上传：upload-mix.py 取公网 URL（OSS 链接长期有效，可复用）
-
-## 3. 画风 DNA（提示词尾部必拼）
+## 目录结构（仓库相对路径）
 
 ```
-日式手绘漫画风格，铅笔质感的利落手绘线稿，灰色网点纸阴影，少量蓝色和橙色水彩淡彩点缀，米白纸感背景，中文对话气泡文字清晰锐利无错别字，除气泡外画面中不出现任何其他文字，画面干净无水印
+stories/<作品>/storyboard.md      # 每话单一事实源（12 部已入库，可直接复现）
+data/characters/<slug>/manifest.json  # 角色档案（COMIC_DATA 可改数据根）
+assets/characters/                # 定妆照 + 表情/动作/转面三表
+styles/manshi.yaml                # 画风 DNA / 气泡参数资产化（--style 消费）
+output/long-form/                 # 12 部成品（发布即用，勿重刷）
+scripts/                          # 全部工具脚本（见下）
 ```
 
-## 4. 文字质检与修字决策表（实战校准）
+## 流水线九步
 
-| 情形 | 动作 |
-|---|---|
-| 出格后气泡错字/乱码 | image-edit 修字：整句重写失败气泡（成功率 > 单字微调）；禁用嵌套引号目标句 |
-| 同一气泡修字 2 轮仍失败 | patch_text.py 整泡重排：气泡位置由识别接口口述定位，字体 msyhbd.ttc 自适应字号 |
-| 视觉模型 500/超时 | 降级 autoglm-image-recognition（本地图先 upload-mix） |
-| 衍字/标点风格项（半角？、省略句号） | 汉字全对即判通过；标点不阻塞交付 |
-| 「AI 生成」水印 | 服务商合规标识，保留不抹除；发布文案注明"AI 辅助生成，人类逐字终审" |
+1. **文案先行**：调研 → draft.md → 用户确认
+2. **分镜锁定**：storyboard.md；每句 ≤22 字、无嵌套引号
+3. **定妆照**：新画风先 image-edit 转风 + 复核入库（register-ref --version manga）；出格提示词内联完整身份标记（R1）
+4. **分镜→气泡配置**：`python scripts/parse_storyboard.py --storyboard stories/<作品>/storyboard.md --out bubbles.json`
+5. **空场景出格**：`python scripts/gen_panel.py "<提示词>" --ref-local assets/characters/xiaoke-ref-manga.jpg --raw ... --fit ...`（本地图自动上传 OSS，R16：禁止直传本地路径）；批量用 `batch_parallel.py`（线程池+幂等跳过+逐格重试）
+6. **质检**：识别接口查角色要素/水印/意外文字；出图后 `python scripts/lint.py --dir panels/ --bubbles bubbles.json`（越界/字号档位/要素三检查）
+7. **代码绘气泡与文字**：`python scripts/draw_bubbles.py --bubbles bubbles.json --dir panels/ --style styles/manshi.yaml`（重采样 1080 宽 R12 → 画气泡 R15 → 文字推导高度 R14）
+8. **修字闭环**（v8 下罕见）：`fix_panel.py` OCR 比对 → 整句重写 → 2 轮失败转 `patch_text.py`
+9. **拼装交付**：`stack.py`（1080px PNG+JPG）+ verify 核验
 
-## 5. 构图规范
+## 角色与定妆照
 
-- 问答格 3:2（900×~582）、过场条格 21:9（900×~386）、收尾格可 3:2 半身
-- 小柯恒左、波普恒右；圆角矩形气泡=小柯，锯齿尾=波普
-- 长图 900px 宽、GAP 26、标题区 300px（PAPER #fafaf7 / INK #1a1a1a / ACCENT #b8553a）
+- 登记：`comic.py ensure-character --name 小码 --slug xiaoke --role 提问者 --markers "黑色短发，圆框眼镜，深灰连帽衫"`
+- 出格提示词**内联完整身份标记**（只写"保持参考图造型"会丢眼镜/变色，R1）
+- 角色持久变化 → register-ref 新建版本，绝不覆盖 base
+- 角色三表（表情/动作/转面）用 `gen_sheets.py` 一键生成
 
-## 6. 发布链路
+## 画风 DNA（styles/manshi.yaml，--style 消费）
 
-post.md → doocs/md 或 mdnice → 一键复制公众号（粘贴自动传图）。博客直接按格插图或用 long-manga.jpg。系列长图跨话复用 manga 版定妆照。
+```
+日式手绘漫画风格，铅笔质感利落手绘线稿，灰色网点纸阴影，少量蓝色和橙色水彩淡彩点缀，米白纸感背景
+```
+空场景约束：无气泡无文字、上部留白（由调用方拼接，不写入 DNA）
 
-## 7. 依赖与工具
+## 构图与拼装
 
-- autoglm-generate-image-seedream（文生图/图生图）、autoglm-image-edit（修字/转风）、autoglm-image-recognition（文字终验兜底）、upload-mix.py（参考图上传）
-- scripts/：comic.py（档案/登记/台账）、gen_panel.py（出格一条龙）、patch_text.py（整泡重排）、stack.py（长图拼装）
-- Pillow（必需）、numpy（patch_text.py）、微软雅黑字体（Windows 自带）
+- 问答格 3:2、过场条格 21:9；小码恒左、波普恒右；气泡：小码=圆角矩形左下尾，波普=椭圆锯齿尾
+- 长图 1080px 宽、GAP 28、页脚「出自公众号：码事漫谈」（唯一页脚内容，R11）
+- 色彩：PAPER #fafaf7 / INK #1a1a1a / ACCENT #b8553a
+
+## 根因登记表
+
+见 [docs/ROOT-CAUSES.md](docs/ROOT-CAUSES.md)（R1-R16）。**新版本必须继承全部已修复行为；每次翻车必须新增条目。**
+
+## 依赖与后端
+
+- Pillow、numpy（requirements.txt）；微软雅黑（Windows 自带；Linux fonts-noto-cjk）
+- 图像生成：`COMIC_SEEDREAM` / `COMIC_UPLOAD` 环境变量指向后端脚本，默认 AutoGLM Seedream；OpenAI 兼容 API / ComfyUI 适配见 [docs/INTEGRATION.md](docs/INTEGRATION.md)
+- autoglm-image-edit（修字/转风）、autoglm-image-recognition（质检兜底）

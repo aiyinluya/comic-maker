@@ -212,13 +212,64 @@ def main():
 
 
 
-def draw_from_storyboard(bubbles_path, panel_dir):
+def load_style(style_path):
+    """加载风格参数文件（styles/*.yaml），覆盖绘图常量。
+    PyYAML 可用则完整解析；否则回退到内置的极简解析（只支持 bubble: 块的平铺键）。
+    返回 dict，键与 manshi.yaml 的 bubble 段对应。"""
+    p = Path(style_path)
+    if not p.exists():
+        raise SystemExit(f"style file not found: {p}")
+    text = p.read_text(encoding="utf-8")
+    try:
+        import yaml
+        data = (yaml.safe_load(text) or {}).get("bubble", {})
+    except ImportError:
+        data = {}
+        in_bubble = False
+        for line in text.splitlines():
+            s = line.rstrip()
+            if not s or s.lstrip().startswith("#"):
+                continue
+            if s[:1] not in (" ", "-"):
+                in_bubble = s.strip() == "bubble:"
+                continue
+            if in_bubble and s.startswith("  ") and ":" in s:
+                k, v = s.strip().split(":", 1)
+                v = v.strip()
+                if v.startswith("[") and v.endswith("]"):
+                    v = [x.strip() for x in v[1:-1].split(",")]
+                data[k.strip()] = v
+    out = {}
+    if "text_color" in data:
+        v = data["text_color"]
+        if isinstance(v, str):
+            v = [x.strip() for x in v.strip("[]()").split(",")]
+        out["TEXT_COLOR"] = tuple(int(x) for x in v)
+    if "line_height" in data:
+        out["LINE_H"] = float(data["line_height"])
+    if "padding" in data:
+        out["PAD"] = int(data["padding"])
+    if "size_tiers" in data:
+        out["SIZE_TIERS"] = [int(x) for x in data["size_tiers"]]
+    if "stroke_width" in data:
+        out["STROKE_W"] = int(data["stroke_width"])
+    return out
+
+
+def draw_from_storyboard(bubbles_path, panel_dir, style_path=None):
     """单一事实源直读：parse_storyboard.py 产出的 bubbles.json → 绘制 → final。
     y1=None 时按文字需求推导气泡高度（44px 档优先，放不下逐级降档）。
     过场格不在 bubbles.json 中，调用方自行把 raw 拷为 final 占位。"""
     import json as _json
     cfg = _json.loads(Path(bubbles_path).read_text(encoding="utf-8"))
     panel_dir = Path(panel_dir)
+    # 风格参数化（P1-1）：--style 指向 styles/*.yaml 时覆盖全局常量
+    if style_path:
+        style = load_style(style_path)
+        g = globals()
+        for k, v in style.items():
+            g[k] = v
+        print("style applied:", style_path, style)
     probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
     seed = [0]
     report = {}
@@ -232,7 +283,6 @@ def draw_from_storyboard(bubbles_path, panel_dir):
         if img.size[0] != 1080:
             img = img.resize((1080, round(img.size[1] * 1080 / img.size[0])), Image.LANCZOS)
         W, H = img.size
-        _snap_gray = np.asarray(img.convert("L")).copy()
         d = ImageDraw.Draw(img)
         rb = []
         for b in bubbles:
@@ -267,11 +317,6 @@ def draw_from_storyboard(bubbles_path, panel_dir):
             rb.append({"speaker": sp, "size": size, "lines": len(lines)})
         out = panel_dir / f"{key}.final.jpg"
         img.save(out, quality=95)
-        try:
-            np.savez_compressed(panel_dir / f"{key}.ink_snap.npz",
-                                gray=_snap_gray)
-        except Exception:
-            pass
         report[key] = {"out": str(out), "bubbles": rb}
         print(key, _json.dumps(rb, ensure_ascii=False))
     (panel_dir / "draw_report.json").write_text(
@@ -284,12 +329,13 @@ def main_cli():
     ap = argparse.ArgumentParser(description="Draw speech bubbles & text on bubble-free panels.")
     ap.add_argument("--bubbles", help="bubbles.json from parse_storyboard.py")
     ap.add_argument("--dir", help="directory containing <key>.raw.jpg")
+    ap.add_argument("--style", help="style params yaml (styles/manshi.yaml)")
     ap.add_argument("--legacy", action="store_true", help="run built-in JOBS demo")
     a = ap.parse_args()
     if a.bubbles:
         if not a.dir:
             ap.error("--dir is required with --bubbles")
-        draw_from_storyboard(a.bubbles, a.dir)
+        draw_from_storyboard(a.bubbles, a.dir, a.style)
     else:
         main()
 

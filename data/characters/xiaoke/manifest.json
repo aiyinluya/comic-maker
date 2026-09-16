@@ -1,0 +1,18 @@
+{
+  "name": "小码",
+  "slug": "xiaoke",
+  "role": "提问者",
+  "identity_markers": "黑色短发，圆框眼镜，深灰色连帽衫，蓝色牛仔裤",
+  "versions": [
+    "base",
+    "manga"
+  ],
+  "refs": {
+    "base": "ref.jpg",
+    "manga": "assets/characters/xiaoke-ref-manga.jpg"
+  },
+  "renamed_from": "小柯",
+  "rename_note": "2026-09-15 用户要求改名，形象不变（定妆照沿用）",
+  "brand": "码事漫谈（公众号）",
+  "ref_note": "manga 版定妆照已随仓库分发；base 版为历史初稿"
+}

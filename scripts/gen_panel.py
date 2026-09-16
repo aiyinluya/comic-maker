@@ -12,13 +12,18 @@ URL 不经过对话层。支持：
       --raw out.raw.jpg --fit out.jpg [--retries 3]
 """
 import json
+import os
 import subprocess
 import sys
 import urllib.request
 from pathlib import Path
 
-SEEDREAM = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\generate-image-seedream.py"
-UPLOAD = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\upload-mix.py"
+# 后端脚本可经环境变量覆盖（OpenAI 兼容 API / ComfyUI 适配见 docs/INTEGRATION.md）
+# default: 本机 AutoGLM 技能脚本；CI 允许默认值存在，但不许新增裸路径
+_SEEDREAM_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\generate-image-seedream.py"
+_UPLOAD_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\upload-mix.py"
+SEEDREAM = os.environ.get("COMIC_SEEDREAM", _SEEDREAM_DEFAULT)
+UPLOAD = os.environ.get("COMIC_UPLOAD", _UPLOAD_DEFAULT)
 
 
 def local_ref_to_url(local_path):

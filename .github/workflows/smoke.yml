@@ -28,3 +28,17 @@ jobs:
           test -f examples/assets/panel-01.final.jpg
           test -f examples/assets/panel-02.final.jpg
           echo "smoke OK"
+      - name: Guard against hardcoded absolute paths
+        run: |
+          # R16 防回归：核心脚本不许硬编码用户目录（Windows/macOS/Linux 通扫）
+          if grep -rn -E "C:\\\\Users|/home/[a-z]|/Users/" scripts/ --include="*.py" | grep -v "os.environ.get" | grep -v "# default"; then
+            echo "::error::hardcoded absolute path found in scripts/"
+            exit 1
+          fi
+          echo "path guard OK"
+      - name: Parse all stories (repro pack integrity)
+        run: |
+          for sb in stories/*/storyboard.md; do
+            python scripts/parse_storyboard.py --storyboard "$sb" --out /tmp/$(basename $(dirname "$sb")).json
+          done
+          echo "stories parse OK: $(ls /tmp/*.json | wc -l) files"
