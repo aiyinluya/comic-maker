@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""styles/manshi.yaml — 风格资产化：风格 DNA 与角色标记的参数化定义。
+gen_topic / batch_parallel 可读取本文件替代内置串。
+"""
+name: manshi
+display_name: 码事漫谈 · 日式手绘
+dna: >-
+  日式手绘漫画风格，铅笔质感的利落手绘线稿，灰色网点纸阴影，少量蓝色和橙色水彩淡彩点缀，
+  米白纸感背景，画面干净无水印
+characters:
+  xiaoma:
+    display_name: 小码
+    role: 提问者
+    markers: >-
+      左侧男生小柯（严格保持参考图造型：黑色短发、脸上必须戴圆框眼镜、
+      深灰色连帽衫、蓝色牛仔裤）
+  popu:
+    display_name: 波普
+    role: 解答者
+    markers: >-
+      右侧白色胶囊机器人波普（严格保持参考图造型：白色胶囊形身体、
+      黑色面罩上有两只蓝色发光圆眼、头顶细天线顶端蓝色圆点、胸口橙色圆形徽章）
+bubble:
+  text_color: [35, 35, 40]
+  line_height: 1.3
+  padding: 26
+  size_tiers: [44, 38, 32, 26]
+  stroke_width: 4
+strip:
+  width: 1080
+  gap: 28
+  header_height: 380
+  footer_height: 150
+  footer_text: 出自公众号：码事漫谈
