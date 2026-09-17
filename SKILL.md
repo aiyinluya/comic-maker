@@ -15,22 +15,23 @@ description: "生成公众号手绘长漫画 v2.8：分镜单一事实源 → �
 3. **气泡与文字一律代码绘制**：出格提示词含「画面中绝对不出现任何对话气泡，不出现任何文字、字母、数字、符号」。
 4. **文字 UNIFIED**：44px 优先档位（1080 宽成品坐标系，极端兜底 38/32/26）、微软雅黑 Bold、色 (35,35,40)、行距 1.3、边距 26px；说话人区分只靠气泡形状。
 5. **品牌规范**：页脚唯一「出自公众号：码事漫谈」；无话数编号。
+6. **表情逐格指定（R18）**：定妆照只锁造型，i2i 会把表情也锁死；分镜画面列必须为每个露脸角色逐格写明眉眼嘴形态，禁止全话同一张脸；面罩机器人用「蓝眼弯成月牙=笑、蓝眼明亮=自信」表达情绪。
 
 ## 目录结构（仓库相对路径）
 
 ```
-stories/<作品>/storyboard.md      # 每话单一事实源（12 部已入库，可直接复现）
+stories/<作品>/storyboard.md      # 每话单一事实源（19 部已入库，可直接复现）
 data/characters/<slug>/manifest.json  # 角色档案（COMIC_DATA 可改数据根）
 assets/characters/                # 定妆照 + 表情/动作/转面三表
 styles/manshi.yaml                # 画风 DNA / 气泡参数资产化（--style 消费）
-output/long-form/                 # 12 部成品（发布即用，勿重刷）
+output/long-form/                 # 19 部成品（发布即用，勿重刷）
 scripts/                          # 全部工具脚本（见下）
 ```
 
 ## 流水线九步
 
 1. **文案先行**：调研 → draft.md → 用户确认
-2. **分镜锁定**：storyboard.md；每句 ≤22 字、无嵌套引号
+2. **分镜锁定**：storyboard.md；每句 ≤22 字、无嵌套引号；画面列逐格写明露脸角色表情（铁律 6 / R18）
 3. **定妆照**：新画风先 image-edit 转风 + 复核入库（register-ref --version manga）；出格提示词内联完整身份标记（R1）
 4. **分镜→气泡配置**：`python scripts/parse_storyboard.py --storyboard stories/<作品>/storyboard.md --out bubbles.json`
 5. **空场景出格**：`python scripts/gen_panel.py "<提示词>" --ref-local assets/characters/xiaoke-ref-manga.jpg --raw ... --fit ...`（本地图自动上传 OSS，R16：禁止直传本地路径）；批量用 `batch_parallel.py`（线程池+幂等跳过+逐格重试）
@@ -61,7 +62,7 @@ scripts/                          # 全部工具脚本（见下）
 
 ## 根因登记表
 
-见 [docs/ROOT-CAUSES.md](docs/ROOT-CAUSES.md)（R1-R16）。**新版本必须继承全部已修复行为；每次翻车必须新增条目。**
+见 [docs/ROOT-CAUSES.md](docs/ROOT-CAUSES.md)（R1-R18）。**新版本必须继承全部已修复行为；每次翻车必须新增条目。**
 
 ## 依赖与后端
 

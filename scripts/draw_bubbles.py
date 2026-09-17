@@ -93,13 +93,22 @@ def jitter_line(d, p0, p1, seed=[0]):
     d.line(pts, fill=INK, width=4, joint="curve")
 
 
+# 避头标点（R17）：不允许出现在行首；断行命中时把上一行末字一并挪到新行
+NO_LINE_START = "，。、；：？！,.;:?!）】》」』’”…·～~"
+
+
 def wrap(text, font, max_w, probe):
     lines, cur = [], ""
     for c in text:
         t = cur + c
         if probe.textlength(t, font=font) > max_w and cur:
-            lines.append(cur)
-            cur = c
+            if c in NO_LINE_START and len(cur) >= 2:
+                # R17 避头尾：换行点提前一个字，新行以「末字+标点」开头，标点不悬行首
+                lines.append(cur[:-1])
+                cur = cur[-1] + c
+            else:
+                lines.append(cur)
+                cur = c
         else:
             cur = t
     if cur:

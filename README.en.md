@@ -94,7 +94,7 @@ The image backend is not hard-wired: OpenAI-compatible APIs, ComfyUI, or AutoGLM
 
 ```
 output/                        ★ finished art (publish-ready)
-  index.html                   gallery index for all 12 works
+  index.html                   gallery index for all 19 works
   long-form/                   12 vertical strips, numbered by work
   panels/                      final single panels, grouped per work
 articles/                      6 companion articles + index / glossary / ledger

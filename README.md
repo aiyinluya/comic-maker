@@ -43,7 +43,7 @@
 | 风格资产化 | `styles/manshi.yaml` | 画风 DNA、角色标记、气泡参数、拼装尺寸集中定义 |
 | 角色设定集 | `gen_sheets.py` | 表情表 / 动作表 / 转面图一键生成（见 assets/characters/） |
 
-全部 12 部成品长图和 6 篇同源文章在 [output/index.html](output/index.html) 总索引页浏览。
+全部 19 部成品长图和 6 篇同源文章在 [output/index.html](output/index.html) 总索引页浏览。
 
 ## 流水线
 
@@ -92,12 +92,12 @@ python scripts/stack.py --config stack.json
 
 ```
 output/                        ★ 最终成品（发布即用）
-  index.html                   12 部作品总索引页（本地打开即用）
-  long-form/                   12 部竖版长图，按作品编号命名
+  index.html                   19 部作品总索引页（本地打开即用）
+  long-form/                   19 部竖版长图，按作品编号命名
     01-mcp/01-mcp.png          主图（PNG）+ -share.jpg 轻量分享版
     ...
   panels/                      单格成品图（按作品分子目录，供按格发布/博客用）
-stories/                       ★ 12 部作品的复现分镜包（每话 storyboard.md）
+stories/                       ★ 19 部作品的复现分镜包（每话 storyboard.md）
 articles/                      6 篇同源科普文章 + 索引 / 术语表 / 台账
 assets/characters/             定妆照 + 表情表 / 动作表 / 转面图
 data/characters/               角色档案（comic.py 数据落点，COMIC_DATA 可改）
