@@ -43,7 +43,7 @@ f_sub = load_font(26, bold=False)
 d.rectangle([60, 70, 100, 76], fill=ACCENT)
 d.text((60, 92), "为什么 AI 会一本正经地", font=f_title, fill=INK)
 d.text((60, 170), "胡说八道？", font=f_title, fill=INK)
-d.text((60, 248), "小柯 & 波普 · 手绘长漫画 第 1 话 · 一问一答讲透「AI 幻觉」", font=f_sub, fill=MUTE)
+d.text((60, 248), "小码 & 波普 · 手绘长漫画 第 1 话 · 一问一答讲透「AI 幻觉」", font=f_sub, fill=MUTE)
 
 total_h = TH + sum(im.height for im in imgs) + GAP * (len(imgs) - 1)
 canvas = Image.new("RGB", (W, total_h), PAPER)
