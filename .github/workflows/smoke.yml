@@ -55,4 +55,6 @@ jobs:
           python scripts/_smoke_check.py /tmp/blog-smoke --offline
           # 无过程 panels 场景：验证回退 output/panels
           python scripts/_smoke_fallback.py
+          # 无模板场景：验证回退设计系统 CSS（不依赖外部 skill 资产）
+          python scripts/_smoke_notpl.py
           echo "blog smoke OK"

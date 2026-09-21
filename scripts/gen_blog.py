@@ -210,8 +210,28 @@ def gen_magazine(blog_md, out_id, title, kicker, story, out_dir, mode, offline=F
         t = tpl.read_text(encoding="utf-8")
         m = re.search(r"<style>(.*?)</style>", t, re.S)
         css = m.group(1) if m else ""
+    else:
+        # 回退设计系统（delivery-artifact 杂志风核心签名，CI/外部环境自包含）
+        css = """
+  :root { --ink:#1a1a1a; --paper:#fafaf7; --line:#e7e5e0; --mute:#6b6760; --accent:#b8553a; }
+  body { font-family:'Inter','Noto Sans SC',sans-serif; background:var(--paper); color:var(--ink); margin:0; -webkit-font-smoothing:antialiased; }
+  .serif { font-family:'Noto Serif SC',Georgia,serif; }
+  .article p { font-size:1.0625rem; line-height:1.8; color:#262421; margin:1.1em auto; max-width:65ch; }
+  .article h1 { font-family:'Noto Serif SC',serif; font-size:2.6rem; font-weight:900; line-height:1.15; margin:0 auto 0.6em; max-width:65ch; }
+  .article h2 { font-family:'Noto Serif SC',serif; font-size:1.875rem; font-weight:700; margin:2.4em auto 0.8em; max-width:65ch; letter-spacing:-0.01em; }
+  .article blockquote { border-left:3px solid var(--accent); padding:0 0 0 20px; margin:1.6em auto; font-style:italic; color:var(--mute); font-family:'Noto Serif SC',serif; font-size:1.0625rem; line-height:1.7; max-width:calc(65ch - 23px); }
+  .kicker { font-size:11px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); margin:0 auto 20px; max-width:65ch; }
+  .byline { display:flex; align-items:center; gap:12px; font-size:12px; color:var(--mute); padding-bottom:48px; border-bottom:1px solid var(--line); margin-bottom:12px; max-width:65ch; }
+  .byline .dot { width:32px; height:32px; border-radius:50%; background:var(--accent); }
+  .grain::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:0.4; background-image:radial-gradient(circle at 12% 18%, rgba(106,92,56,0.05), transparent 45%), radial-gradient(circle at 88% 72%, rgba(106,92,56,0.04), transparent 50%); }
+"""
+    if tpl.exists():
+        t = tpl.read_text(encoding="utf-8")
+        m2 = re.search(r"<style>(.*?)</style>", t, re.S)
+        css = m2.group(1) if m2 else ""
     css += """
-  figure.panel { margin:2em 0; }
+  .article p, .article h1, .article h2, .article blockquote, .article ul { margin-left:auto; margin-right:auto; }
+  figure.panel { margin:2em auto; max-width:100%; }
   figure.panel img { width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:10px; }
   figure.panel.long img { border:none; }
   figure.panel figcaption { font-size:12px; color:var(--mute); text-align:center; margin-top:10px; letter-spacing:0.04em; }
@@ -228,16 +248,16 @@ def gen_magazine(blog_md, out_id, title, kicker, story, out_dir, mode, offline=F
 <style>{css}</style>
 </head>
 <body class="grain">
-<article class="article max-w-[720px] mx-auto px-6 pt-20 pb-32">
-<div class="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--accent)] mb-5">{esc(kicker)}</div>
-<h1 class="serif text-[3rem] leading-[1.08] font-black tracking-tight mb-5">{esc(title)}</h1>
-<div class="flex items-center gap-3 text-[12px] text-[var(--mute)] pb-12 border-b border-[var(--line)]">
-<div class="w-8 h-8 rounded-full" style="background:var(--accent)"></div>
-<span class="font-medium text-[var(--ink)]">码事漫谈</span>
+<article class="article" style="max-width:720px;margin:0 auto;padding:80px 24px 128px;">
+<div style="font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;">{esc(kicker)}</div>
+<h1 class="serif" style="font-size:3rem;line-height:1.12;font-weight:900;letter-spacing:-0.01em;margin:0 0 20px;">{esc(title)}</h1>
+<div style="display:flex;align-items:center;gap:12px;font-size:12px;color:var(--mute);padding-bottom:48px;border-bottom:1px solid var(--line);">
+<div style="width:32px;height:32px;border-radius:50%;background:var(--accent);"></div>
+<span style="font-weight:500;color:var(--ink);">码事漫谈</span>
 <span>·</span><span>小码 &amp; 波普 漫画配套图文</span>
 </div>
 {chr(10).join(blocks)}
-<p class="text-center text-[12px] text-[var(--mute)] mt-14 tracking-[0.1em]">出自公众号：码事漫谈</p>
+<p style="text-align:center;font-size:12px;color:var(--mute);margin-top:56px;letter-spacing:0.1em;">出自公众号：码事漫谈</p>
 </article>
 </body>
 </html>
