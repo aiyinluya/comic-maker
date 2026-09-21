@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""styles/manshi.yaml — 风格资产化：风格 DNA 与角色标记的参数化定义。
-gen_topic / batch_parallel 可读取本文件替代内置串。
-"""
+# styles/manshi.yaml — 风格资产化：风格 DNA 与角色标记的参数化定义。
+# gen_topic / batch_parallel / gen_work20 可读取本文件替代内置串。
 name: manshi
 display_name: 码事漫谈 · 日式手绘
 dna: >-
