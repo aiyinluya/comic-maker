@@ -54,8 +54,19 @@ def parse_storyboard(story: Path):
     return rows
 
 
-def count_panels(panels_dir: Path):
-    return len(list(panels_dir.glob("v8-*.final.jpg")))
+def count_panels(story: Path, out_id=None):
+    n = len(list(story.glob("v8-*.final.jpg")))
+    if n == 0 and out_id:
+        n = len(list((HERE / "output/panels" / out_id).glob("*.jpg")))
+    return n
+
+
+def panel_final(story: Path, out_id: str, ref: str) -> Path:
+    """单格成品定位：stories 过程目录优先，回退入库的 output/panels（CI 无过程文件）。"""
+    p = story / "panels" / f"v8-{ref}.final.jpg"
+    if p.exists():
+        return p
+    return HERE / "output/panels" / out_id / f"{ref}.jpg"
 
 
 def upload_oss(path: Path):
@@ -118,7 +129,7 @@ def gen_md(blog_md, out_id, title, kicker, story, out_dir, long_png):
     # 把 ![xx](NN) 数字占位拷贝为资产图
     def copy_asset(m):
         alt, num = m.group(1), m.group(2)
-        src = story / "panels" / f"v8-{num}.final.jpg"
+        src = panel_final(story, out_id, num)
         if src.exists():
             shutil.copy(src, assets / f"{num}.jpg")
             return f"![{alt}](assets/{out_id}/{num}.jpg)"
@@ -155,7 +166,11 @@ def md_to_html_blocks(blog_md, story, out_dir, out_id, mode, offline=False):
             elif re.fullmatch(r"\d{2}", ref) and ref in urls:
                 blocks.append(f'<figure class="panel"><img src="{urls[ref]}" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
             elif re.fullmatch(r"\d{2}", ref):
-                shutil.copy(story / "panels" / f"v8-{ref}.final.jpg", out_dir / "assets" / out_id / f"{ref}.jpg")
+                src = panel_final(story, out_id, ref)
+                if not src.exists():
+                    raise FileNotFoundError(f"panel not found: {src}")
+                (out_dir / "assets" / out_id).mkdir(parents=True, exist_ok=True)
+                shutil.copy(src, out_dir / "assets" / out_id / f"{ref}.jpg")
                 blocks.append(f'<figure class="panel"><img src="assets/{out_id}/{ref}.jpg" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
         elif s.startswith("- "):
             items = "".join(f"<li>{esc(li[2:])}</li>" for li in s.splitlines() if li.startswith("- "))
@@ -179,7 +194,7 @@ def load_oss_urls(out_id, story, blog_md, offline=False):
             return {r: cached[r] for r in refs}
     urls = {}
     for r in refs:
-        urls[r] = upload_oss(story / "panels" / f"v8-{r}.final.jpg")
+        urls[r] = upload_oss(panel_final(story, out_id, r))
         print(f"  oss {r}", flush=True)
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(urls, indent=2), encoding="utf-8")
@@ -281,7 +296,7 @@ def gen_wechat(blog_md, out_id, title, kicker, story, out_dir, mode, offline=Fal
                 parts.append(IMG(ref, alt))
                 parts.append(CAP(esc(alt)))
             elif re.fullmatch(r"\d{2}", ref):
-                shutil.copy(story / "panels" / f"v8-{ref}.final.jpg",
+                shutil.copy(panel_final(story, out_id, ref),
                             out_dir / "assets" / out_id / f"{ref}.jpg")
                 parts.append(f'<img src="assets/{out_id}/{ref}.jpg" alt="{esc(alt)}" '
                              'style="width:100%;height:auto;display:block;border-radius:8px;" />')
@@ -343,7 +358,7 @@ def main():
     blog_md = Path(a.blog_md).read_text(encoding="utf-8") if a.blog_md else None
     if blog_md is None:
         rows = parse_storyboard(story)
-        blog_md = (draft_long_script(a.out_id, a.title, count_panels(story / "panels"))
+        blog_md = (draft_long_script(a.out_id, a.title, count_panels(story, a.out_id))
                    if a.format == "long" else draft_panels_script(rows))
         print("blog copy: auto-draft (skeleton, polish before publishing)")
 
