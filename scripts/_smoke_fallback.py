@@ -8,7 +8,7 @@ from pathlib import Path
 HERE = Path(__file__).parent.parent
 story = HERE / "stories/story-20-zcode/panels"
 bak = story / "_bak"
-bak.mkdir(exist_ok=True)
+bak.mkdir(parents=True, exist_ok=True)  # CI 上 panels/ 目录本身不存在（被 gitignore）
 moved = []
 for f in story.glob("v8-*.final.jpg"):
     shutil.move(str(f), str(bak / f.name))
