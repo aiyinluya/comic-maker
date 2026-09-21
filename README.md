@@ -42,6 +42,8 @@
 | 并行出图 | `batch_parallel.py` | 线程池批量出格，断点续跑，逐格重试 |
 | 风格资产化 | `styles/manshi.yaml` | 画风 DNA、角色标记、气泡参数、拼装尺寸集中定义 |
 | 角色设定集 | `gen_sheets.py` | 表情表 / 动作表 / 转面图一键生成（见 assets/characters/） |
+| 漫画博客生成 | `gen_blog.py` | 分镜成品 → 三版博客（MD / 杂志 HTML / 公众号复制版）；`--format panels\|long` 选单格图文交错或长图单图版 |
+| 水印清理 | `strip_watermark.py` | 跨图中值掩膜 + inpaint 清除网关白色水印（R19），掩膜自动缓存复用 |
 
 全部 19 部成品长图和 6 篇同源文章在 [output/index.html](output/index.html) 总索引页浏览。
 

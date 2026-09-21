@@ -39,6 +39,11 @@ scripts/                          # 全部工具脚本（见下）
 7. **代码绘气泡与文字**：`python scripts/draw_bubbles.py --bubbles bubbles.json --dir panels/ --style styles/manshi.yaml`（重采样 1080 宽 R12 → 画气泡 R15 → 文字推导高度 R14）
 8. **修字闭环**（v8 下罕见）：`fix_panel.py` OCR 比对 → 整句重写 → 2 轮失败转 `patch_text.py`
 9. **拼装交付**：`stack.py`（1080px PNG+JPG）+ verify 核验
+10. **漫画博客**（可选）：`python scripts/gen_blog.py --story stories/<作品> --out-id <编号> --title "标题" --format panels|long`
+    - 产出三版：`<out-id>.md`（MD 图文版）+ `<out-id>.html`（杂志风阅读版）+ `<out-id>-wechat.html`（公众号复制版：浏览器打开全选复制即用）
+    - `--format panels` 单格图文交错（默认）｜ `--format long` 长图单图版
+    - 正文用 `--blog-md` 传自己写的 Markdown（`## 小节` + `![配图说明](NN)` 数字占位，收尾格 99 除外的两位序号），缺省自动生成分镜问答骨架（发布前人工润色）
+    - 出格后先跑 `scripts/strip_watermark.py --dirs stories/<作品>/panels --inplace` 清网关水印（R19）再入库
 
 ## 角色与定妆照
 

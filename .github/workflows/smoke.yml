@@ -44,3 +44,13 @@ jobs:
             python scripts/parse_storyboard.py --storyboard "$sb" --out /tmp/$(basename $(dirname "$sb")).json
           done
           echo "stories parse OK: $(ls /tmp/*.json | wc -l) files"
+      - name: Blog generator smoke (auto-draft trio)
+        run: |
+          # gen_blog：无网环境用 --offline 跳过 OSS 上传，本地资产路径兜底
+          python scripts/gen_blog.py --story stories/story-20-zcode \
+            --out-id 20-zcode-incident \
+            --title "加密包裹：从曝光到开源的三天" \
+            --kicker "CI smoke" --format panels --offline \
+            --out-dir /tmp/blog-smoke
+          python scripts/_smoke_check.py /tmp/blog-smoke --offline
+          echo "blog smoke OK"
