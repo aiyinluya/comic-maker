@@ -44,6 +44,7 @@ scripts/                          # 全部工具脚本（见下）
     - `--format panels` 单格图文交错（默认）｜ `--format long` 长图单图版
     - 正文用 `--blog-md` 传自己写的 Markdown（`## 小节` + `![配图说明](NN)` 数字占位，收尾格 99 除外的两位序号），缺省自动生成分镜问答骨架（发布前人工润色）
     - 出格后先跑 `scripts/strip_watermark.py --dirs stories/<作品>/panels --inplace` 清网关水印（R19）再入库
+    - 发布前改稿：把博客正文过一遍 [prompts/de-ai-edit.md](prompts/de-ai-edit.md)（去 AI 味三遍法；项目适配注记优先于原文，不得抹平「被曝 / 官方称」归因纪律）
 
 ## 角色与定妆照
 

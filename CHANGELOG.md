@@ -8,6 +8,7 @@
 - **漫画博客生成器** `scripts/gen_blog.py`：分镜成品一键生成三版博客（MD 图文版 / 杂志风 HTML 阅读版 / 公众号复制版），`--format panels|long` 可选单格图文交错或长图单图版；公众号版全内联样式 + OSS 图床，浏览器全选复制即可粘贴到公众号编辑器（图片自动转存微信图床）；正文可 `--blog-md` 自定义或自动生成分镜问答骨架；`--offline` 模式供 CI 冒烟
 - **通用水印清理** `scripts/strip_watermark.py`（R19 工具化）：跨图中值掩膜提取网关白色水印字形 + inpaint 修复，掩膜自动缓存到 `assets/wm-mask-<W>x<H>.png` 复用；`--inplace` 覆盖 raw（自动备份 `wm-original/`）
 - **CI 冒烟扩展**：smoke.yml 新增 blog 生成冒烟（offline 模式跑通三版产物并断言 11 图 / 标题 / 页脚签名）
+- **去 AI 味改稿提示词** `prompts/de-ai-edit.md`：博客发布前改稿工序（三遍法：重写→自检残留→修正）；附中文科普语境适配注记（破折号/「不是X而是Y」限用、技术术语豁免、事实口径不松动），样本语料指向 articles/ 成文；挂入 SKILL.md 第十步
 - **第 19 部作品**《豆包 2.1 Pro：0915 新版强在哪？》（`stories/image-to-code/`，output 编号 19）：盘点 Doubao-Seed-2.1-pro 0915 新版四大升级（Agent 可信交付、多模态编程、多模态理解、图像/视频 Token 降 30%+）；8 格，其中 4 格空场景复用自该话 v1 草稿，复现驱动器 `gen_episode19.py`
 
 ### 修复
