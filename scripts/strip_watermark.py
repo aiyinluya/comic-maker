@@ -21,7 +21,7 @@ import cv2
 import numpy as np
 
 HERE = Path(__file__).parent.parent
-WIN_DEFAULT = (1950, 1550, 2496, 1664)   # 2496×1664 raw 的水印条带
+WIN_DEFAULT = (1950, 1490, 2496, 1664)   # 2496×1664 raw 的水印条带（顶部余量放宽：R19b 批次间会漂移）
 DIFF_TH = 1.8
 MIN_IMGS_FOR_MEDIAN = 4
 
@@ -58,60 +58,70 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dirs", nargs="+", required=True, help="含 v8-*.raw.jpg 的 panels 目录")
     ap.add_argument("--inplace", action="store_true", help="覆盖 raw（先备份到 wm-original/）")
-    ap.add_argument("--mask", default=None, help="复用已缓存的掩膜 PNG")
+    ap.add_argument("--mask", default=None, help="复用指定掩膜 PNG（跳过自动建模）")
     ap.add_argument("--th", type=float, default=DIFF_TH)
     a = ap.parse_args()
 
     dirs = [Path(d) if Path(d).is_absolute() else HERE / d for d in a.dirs]
-    files = []
-    for d in dirs:
-        files += sorted(d.glob("v8-*.raw.jpg"))
-    if not files:
-        raise SystemExit("no v8-*.raw.jpg found")
 
+    # R19b：水印位置会随批次漂移 → 掩膜按目录各自建模/缓存，不跨批次共用
     if a.mask:
-        mask = cv2.imread(str(HERE / a.mask), cv2.IMREAD_GRAYSCALE)
-        if mask is None:
+        masks = None  # 单掩膜模式
+        shared = cv2.imread(str(HERE / a.mask), cv2.IMREAD_GRAYSCALE)
+        if shared is None:
             raise SystemExit(f"mask not found: {a.mask}")
-        print(f"mask loaded: {a.mask} px={int((mask>0).sum())}")
+        print(f"shared mask loaded: {a.mask} px={int((shared>0).sum())}")
     else:
-        probe = cv2.imread(str(files[0]), cv2.IMREAD_GRAYSCALE)
-        h, w = probe.shape
-        if (w, h) == (WIN_DEFAULT[2], WIN_DEFAULT[3]):
-            win = WIN_DEFAULT
-        else:  # 按比例缩放窗口
-            sx, sy = w / WIN_DEFAULT[2], h / WIN_DEFAULT[3]
-            win = (int(WIN_DEFAULT[0]*sx), int(WIN_DEFAULT[1]*sy), w, h)
-        cache = HERE / "assets" / f"wm-mask-{w}x{h}.png"
-        if cache.exists():
-            mask = cv2.imread(str(cache), cv2.IMREAD_GRAYSCALE)
-            print(f"mask cache hit: {cache.name}")
-        else:
-            mask = build_mask(files, win, a.th)
+        masks = {}
+        for d in dirs:
+            files_d = sorted(d.glob("v8-*.raw.jpg"))
+            if not files_d:
+                print(f"  no raws in {d.name}, skip mask")
+                continue
+            probe = cv2.imread(str(files_d[0]), cv2.IMREAD_GRAYSCALE)
+            h, w = probe.shape
+            key = d.parent.name or d.name   # 用话目录名做键，避免多个 <话>/panels 撞名
+            cache = HERE / "assets" / f"wm-mask-{w}x{h}-{key}.png"
+            if cache.exists():
+                masks[str(d)] = cv2.imread(str(cache), cv2.IMREAD_GRAYSCALE)
+                print(f"  mask cache hit: {cache.name} px={int((masks[str(d)]>0).sum())}")
+                continue
+            if (w, h) == (WIN_DEFAULT[2], WIN_DEFAULT[3]):
+                win = WIN_DEFAULT
+            else:
+                sx, sy = w / WIN_DEFAULT[2], h / WIN_DEFAULT[3]
+                win = (int(WIN_DEFAULT[0]*sx), int(WIN_DEFAULT[1]*sy), w, h)
+            mask = build_mask(files_d, win, a.th)
             cache.parent.mkdir(exist_ok=True)
             cv2.imwrite(str(cache), mask)
-            print(f"mask cached -> {cache.name}")
+            masks[str(d)] = mask
+            print(f"  mask built+cached for {key} -> {cache.name}")
 
     n_clean = 0
-    for f in files:
-        img = cv2.imread(str(f))
-        if img.shape[:2] != mask.shape:
-            print(f"  SKIP {f.name}: size {img.shape[1]}x{img.shape[0]}")
-            continue
-        out = cv2.inpaint(img, mask, 3, cv2.INPAINT_TELEA)
-        if a.inplace:
-            bdir = f.parent / "wm-original"
-            bdir.mkdir(exist_ok=True)
-            if not (bdir / f.name).exists():
-                shutil.copy(f, bdir / f.name)
-            cv2.imwrite(str(f), out, [cv2.IMWRITE_JPEG_QUALITY, 95])
-            print(f"  inplace {f.parent.parent.name}/{f.name}")
-        else:
-            cdir = f.parent / "cleaned"
-            cdir.mkdir(exist_ok=True)
-            cv2.imwrite(str(cdir / f.name), out, [cv2.IMWRITE_JPEG_QUALITY, 95])
-            print(f"  cleaned {f.parent.parent.name}/{f.name}")
-        n_clean += 1
+    for d in dirs:
+        for f in sorted(d.glob("v8-*.raw.jpg")):
+            img = cv2.imread(str(f))
+            mask = shared if a.mask else masks.get(str(d))
+            if mask is None:
+                print(f"  SKIP {f.name}: no mask")
+                continue
+            if img.shape[:2] != mask.shape:
+                print(f"  SKIP {f.name}: size {img.shape[1]}x{img.shape[0]}")
+                continue
+            out = cv2.inpaint(img, mask, 3, cv2.INPAINT_TELEA)
+            if a.inplace:
+                bdir = f.parent / "wm-original"
+                bdir.mkdir(exist_ok=True)
+                if not (bdir / f.name).exists():
+                    shutil.copy(f, bdir / f.name)
+                cv2.imwrite(str(f), out, [cv2.IMWRITE_JPEG_QUALITY, 95])
+                print(f"  inplace {f.parent.parent.name}/{f.name}")
+            else:
+                cdir = f.parent / "cleaned"
+                cdir.mkdir(exist_ok=True)
+                cv2.imwrite(str(cdir / f.name), out, [cv2.IMWRITE_JPEG_QUALITY, 95])
+                print(f"  cleaned {f.parent.parent.name}/{f.name}")
+            n_clean += 1
     print(f"DONE ({n_clean} panels)")
 
 

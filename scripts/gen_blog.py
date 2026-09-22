@@ -33,6 +33,17 @@ UP = os.environ.get("COMIC_UPLOAD", _UP_DEFAULT)
 
 # ──────────────────────────── 通用工具 ────────────────────────────
 
+IMG_REF = r"(?:\d{2}|assets/[\w\-/.]+?\.(?:jpg|png))"   # 数字占位或真实资产路径
+
+
+def ref_num(ref):
+    """资产路径 → 两位序号；已是序号则原样返回；非单格引用返回 None。"""
+    if re.fullmatch(r"\d{2}", ref):
+        return ref
+    m = re.search(r"assets/[\w\-]+/(\d{2})\.(?:jpg|png)$", ref)
+    return m.group(1) if m else None
+
+
 def parse_storyboard(story: Path):
     """解析 storyboard.md → [{key, q, a, scene}]（跳过过场格）。"""
     sb = story / "storyboard.md"
@@ -128,13 +139,16 @@ def gen_md(blog_md, out_id, title, kicker, story, out_dir, long_png):
     text = "\n".join(out)
     # 把 ![xx](NN) 数字占位拷贝为资产图
     def copy_asset(m):
-        alt, num = m.group(1), m.group(2)
+        alt, ref = m.group(1), m.group(2)
+        num = ref_num(ref)
+        if not num:
+            return m.group(0)
         src = panel_final(story, out_id, num)
         if src.exists():
             shutil.copy(src, assets / f"{num}.jpg")
             return f"![{alt}](assets/{out_id}/{num}.jpg)"
         return m.group(0)
-    text = re.sub(r"!\[([^\]]*)\]\((\d{2})\)", copy_asset, text)
+    text = re.sub(rf"!\[([^\]]*)\]\(({IMG_REF})\)", copy_asset, text)
     path = out_dir / f"{out_id}.md"
     path.write_text(text, encoding="utf-8")
     print(f"  md  -> {path.name}")
@@ -160,18 +174,19 @@ def md_to_html_blocks(blog_md, story, out_dir, out_id, mode, offline=False):
             if not m:
                 continue
             alt, ref = m.group(1), m.group(2)
+            num = ref_num(ref)
             if ref == "LONG":
                 src = f"../output/long-form/{out_id}/{out_id}.png"
                 blocks.append(f'<figure class="panel long"><img src="{src}" alt="{esc(alt)}" loading="lazy" /><figcaption>{esc(alt)}</figcaption></figure>')
-            elif re.fullmatch(r"\d{2}", ref) and ref in urls:
-                blocks.append(f'<figure class="panel"><img src="{urls[ref]}" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
-            elif re.fullmatch(r"\d{2}", ref):
-                src = panel_final(story, out_id, ref)
-                if not src.exists():
-                    raise FileNotFoundError(f"panel not found: {src}")
+            elif num and num in urls:
+                blocks.append(f'<figure class="panel"><img src="{urls[num]}" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
+            elif num:
+                src2 = panel_final(story, out_id, num)
+                if not src2.exists():
+                    raise FileNotFoundError(f"panel not found: {src2}")
                 (out_dir / "assets" / out_id).mkdir(parents=True, exist_ok=True)
-                shutil.copy(src, out_dir / "assets" / out_id / f"{ref}.jpg")
-                blocks.append(f'<figure class="panel"><img src="assets/{out_id}/{ref}.jpg" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
+                shutil.copy(src2, out_dir / "assets" / out_id / f"{num}.jpg")
+                blocks.append(f'<figure class="panel"><img src="assets/{out_id}/{num}.jpg" alt="{esc(alt)}" /><figcaption>{esc(alt)}</figcaption></figure>')
         elif s.startswith("- "):
             items = "".join(f"<li>{esc(li[2:])}</li>" for li in s.splitlines() if li.startswith("- "))
             blocks.append(f"<ul>{items}</ul>")
@@ -187,7 +202,7 @@ def load_oss_urls(out_id, story, blog_md, offline=False):
         print("offline mode: skip OSS upload, use asset paths in wechat html")
         return {}
     cache = HERE / ".openclaw/tmp" / f"oss_urls_{out_id}.json"
-    refs = sorted(set(re.findall(r"!\[[^\]]*\]\((\d{2})\)", blog_md)))
+    refs = sorted({n for n in (ref_num(r) for r in re.findall(rf"!\[[^\]]*\]\(({IMG_REF})\)", blog_md)) if n})
     if cache.exists():
         cached = json.loads(cache.read_text(encoding="utf-8"))
         if all(r in cached for r in refs):
@@ -305,6 +320,7 @@ def gen_wechat(blog_md, out_id, title, kicker, story, out_dir, mode, offline=Fal
             if not m:
                 continue
             alt, ref = m.group(1), m.group(2)
+            num = ref_num(ref)
             if ref == "LONG":
                 if offline:
                     u = f"../output/long-form/{out_id}/{out_id}.png"
@@ -312,13 +328,16 @@ def gen_wechat(blog_md, out_id, title, kicker, story, out_dir, mode, offline=Fal
                     u = upload_oss(HERE / "output/long-form" / out_id / f"{out_id}.png")
                 parts.append(f'<img src="{u}" alt="{esc(alt)}" '
                              'style="width:100%;height:auto;display:block;" />')
-            elif re.fullmatch(r"\d{2}", ref) and ref in urls:
-                parts.append(IMG(ref, alt))
+            elif num and num in urls:
+                parts.append(IMG(num, alt))
                 parts.append(CAP(esc(alt)))
-            elif re.fullmatch(r"\d{2}", ref):
-                shutil.copy(panel_final(story, out_id, ref),
-                            out_dir / "assets" / out_id / f"{ref}.jpg")
-                parts.append(f'<img src="assets/{out_id}/{ref}.jpg" alt="{esc(alt)}" '
+            elif num:
+                src = panel_final(story, out_id, num)
+                if not src.exists():
+                    raise FileNotFoundError(f"panel not found: {src}")
+                (out_dir / "assets" / out_id).mkdir(parents=True, exist_ok=True)
+                shutil.copy(src, out_dir / "assets" / out_id / f"{num}.jpg")
+                parts.append(f'<img src="assets/{out_id}/{num}.jpg" alt="{esc(alt)}" '
                              'style="width:100%;height:auto;display:block;border-radius:8px;" />')
                 parts.append(CAP(esc(alt)))
         elif s.startswith("- "):
