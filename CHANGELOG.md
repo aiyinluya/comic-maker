@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### 新增
+- **VLM 视觉质检** `scripts/vlm_qc.py`（任务 A）：给流水线补上 lint.py 看不见的语义层质检——逐格调 Seed-2.1-pro-0915 多模态接口（火山方舟 OpenAI 兼容，base64 传图 + JSON 输出模式），输出结构化 JSON（小码眼镜在位 / 波普定妆要素 / 盖头 / 混进文字 / 网关水印），`ARK_API_KEY`/`ARK_BASE_URL`/`ARK_MODEL` 可配；demo 报告 `stories/story-21-jev/panels/vlm_report.json`（10 格 9 过 1 疑：v8-02 机器面板疑似刻度字符）与 `vlm_report.wm-original.json`（R19 水印检出），与 lint.py 几何质检（同 10 格全 OK）形成「几何查墨迹 vs VLM 查语义」对比
 - **漫画博客生成器** `scripts/gen_blog.py`：分镜成品一键生成三版博客（MD 图文版 / 杂志风 HTML 阅读版 / 公众号复制版），`--format panels|long` 可选单格图文交错或长图单图版；公众号版全内联样式 + OSS 图床，浏览器全选复制即可粘贴到公众号编辑器（图片自动转存微信图床）；正文可 `--blog-md` 自定义或自动生成分镜问答骨架；`--offline` 模式供 CI 冒烟
 - **通用水印清理** `scripts/strip_watermark.py`（R19 工具化）：跨图中值掩膜提取网关白色水印字形 + inpaint 修复，掩膜自动缓存到 `assets/wm-mask-<W>x<H>.png` 复用；`--inplace` 覆盖 raw（自动备份 `wm-original/`）
 - **CI 冒烟扩展**：smoke.yml 新增 blog 生成冒烟（offline 模式跑通三版产物并断言 11 图 / 标题 / 页脚签名）

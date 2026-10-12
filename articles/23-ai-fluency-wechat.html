@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>会用 AI 的四个动作：教、派、接、验</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;600&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#1a1a1a; --paper:#fafaf7; --line:#e7e5e0; --mute:#6b6760; --accent:#b8553a; --twitter:#1d9bf0; }
+  body { font-family:'Inter','Noto Sans SC',sans-serif; background:var(--paper); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  .serif { font-family:'Noto Serif SC',Georgia,serif; }
+  .ornament { display:flex; align-items:center; justify-content:center; gap:14px; margin:48px 0; color:var(--mute); }
+  .ornament::before, .ornament::after { content:""; flex:1; max-width:60px; height:1px; background:var(--line); }
+  .article p { font-size:1.0625rem; line-height:1.8; color:#262421; margin:1.1em 0; max-width:65ch; }
+  .article h2 { font-family:'Noto Serif SC',serif; font-size:1.875rem; font-weight:700; margin:2.4em 0 0.8em; letter-spacing:-0.01em; }
+  .article blockquote { border-left:3px solid var(--accent); padding:0 0 0 20px; margin:1.6em 0; font-style:italic; color:var(--mute); font-family:'Noto Serif SC',serif; font-size:1.0625rem; line-height:1.7; }
+  .article a { color:var(--accent); text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1px; }
+  .grain::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:0.4; background-image:radial-gradient(circle at 12% 18%, rgba(106,92,56,0.05), transparent 45%), radial-gradient(circle at 88% 72%, rgba(106,92,56,0.04), transparent 50%); }
+</style>
+</head>
+<body class="grain">
+<article class="article max-w-[720px] mx-auto px-6 pt-20 pb-32">
+
+  <!-- kicker -->
+  <div class="text-[11px] font-medium tracking-[0.22em] uppercase text-[var(--accent)] mb-5">码事漫谈 · AI 科普 · 2026-10-08</div>
+
+  <!-- hero 标题 -->
+  <h1 class="serif text-[3rem] leading-[1.08] font-black tracking-tight mb-5">
+    会用 AI 的四个动作：<br/>教、派、<span class="italic font-bold" style="color:var(--accent)">接</span>、验
+  </h1>
+
+  <!-- 导语 -->
+  <p class="text-[1.125rem] leading-relaxed text-[var(--mute)] font-light max-w-[60ch] mb-8">
+    Skills、专家智能体、MCP——知道这三个就算会用 AI 了吗？基本同意，但还差第四个动作。它没什么技术含量，却决定前三个是真能交付的功夫，还是停在嘴上的表演。
+  </p>
+
+  <!-- 署名行 -->
+  <div class="flex items-center gap-3 text-[12px] text-[var(--mute)] pb-12 border-b border-[var(--line)]">
+    <div class="w-8 h-8 rounded-full" style="background:var(--accent)"></div>
+    <span class="font-medium text-[var(--ink)]">小码 &amp; 波普</span>
+    <span>·</span><span>2026 年 10 月 8 日</span>
+    <span>·</span><span>约 8 分钟阅读</span>
+  </div>
+
+  <!-- 开篇 -->
+  <p>「怎么才算会用 AI 了？」</p>
+  <p>这个问题每隔一阵就换一个答案。2023 年，是会写提示词；2024 年，是会攒 GPTs、调角色卡；到了 2026 年，聊天框人人都会开，提示词写得漂亮已经分不出高下。</p>
+  <p>我的答案很简单，四个动作：<strong class="font-semibold text-[var(--ink)]">教、派、接、验</strong>。</p>
+  <p>前三个你可能都见过——Skills、专家智能体、MCP。有人觉得知道这三个就够了，我基本同意，但要补一句：还差第四个动作。它没什么技术含量，却决定前面三个是真能交付的功夫，还是停在嘴上的表演。</p>
+
+  <div class="ornament"><span class="serif italic">·  ·  ·</span></div>
+
+  <!-- 一、教 -->
+  <h2>一、教：把套路沉淀成手册</h2>
+  <p><span class="serif font-bold text-[1.5rem] float-left mr-2 leading-none mt-1.5" style="color:var(--accent)">大</span>多数人用 AI 的方式，是每次现场口述：要求重新打一遍，格式重新讲一遍，坑重新踩一遍。第二次用和第一次用，没有任何区别。</p>
+  <p>Skills 改变的就是这件事。一份 skill 是一份写好的操作手册：流程是什么、规范是什么、哪些坑别踩，AI 干活前自己读，按需取用。你把「排版要怎么排」写进 skill，从此不必每次重教；你把「一份 PDF 该怎么拆」写成 skill，AI 拿来就按固定工序干活，不用你盯着。</p>
+  <p>类比很老但准确：<strong class="font-semibold text-[var(--ink)]">新员工入职手册</strong>。没有手册的公司，每件事老板都要亲自带三遍；有手册的公司，人一到位就能干活。</p>
+  <p>所以会用 AI 的第一个标志，不是「问得好」，是「教得会」。你的常用套路，有没有沉淀成 skill，让 AI 下次不用重新学？还在每次口述的人，把 AI 当搜索框；写 skill 的人，把 AI 当员工。</p>
+
+  <div class="ornament"><span class="serif italic">·  ·  ·</span></div>
+
+  <!-- 二、派 -->
+  <h2>二、派：从跟 AI 聊天，到给 AI 派活</h2>
+  <p>第二个动作，是角色切换：你不再是聊天框里事必躬亲的那个人，你是项目经理。</p>
+  <p>2026 年的主流 AI 工具里，一段对话可以长出好几个专职智能体：调研的去翻资料，写代码的去改仓库，审稿的只管挑错。各干各的，互不打架，干完把结果交回来。比如写一篇长文，我会同时派三个：一个查资料、一个写初稿、一个专门挑错，最后我自己合稿——比在一个窗口里从头聊到尾快得多，也稳得多。</p>
+  <p>派活的要领不是语气客气，是把三件事一次讲清：<strong class="font-semibold text-[var(--ink)]">做什么、做成什么样、别碰什么</strong>。很多人用不好 AI，不是 AI 不行，是不会派活：需求一句话半，标准全在脑子里，干完不满意，返工三轮——这在任何公司都是最贵的成本。</p>
+  <p>会用 AI 的第二个标志：你的活开始有分工。什么时候并行派几个专家、什么时候自己上，你心里有一张表。</p>
+
+  <div class="ornament"><span class="serif italic">·  ·  ·</span></div>
+
+  <!-- 三、接 -->
+  <h2>三、接：给 AI 办一张门禁卡</h2>
+  <p>MCP 我们以前专门写过，一句话复习：它是 AI 的 USB-C。这个开放标准把 N×M 的对接乱局，变成 M+N——工具只要出一个 MCP 接口，任何 AI 都能用。</p>
+  <p>但这里想说的不是协议本身，是它划出的那条线：接上 MCP 之前，AI 一张嘴，能说不能做，你永远是那个复制粘贴的中转站；接上之后，AI 才有手——读得到你真正的文件，查得到你真正的数据，产出的东西直接放进你的项目里。</p>
+  <p>会用 AI 的第三个标志：AI 不再隔着一层复制粘贴帮你。你敢让它碰真实环境，同时也给它划好了边界——哪些目录可读，哪些操作要先问过你。<strong class="font-semibold text-[var(--ink)]">门禁卡要办，权限清单也要写。</strong></p>
+
+  <div class="ornament"><span class="serif italic">·  ·  ·</span></div>
+
+  <!-- 四、验 -->
+  <h2>四、验：最不值钱，也最要命</h2>
+  <p>前三样都齐了，还差一个动作。</p>
+  <p>把 AI 的输出当成一件<strong class="font-semibold text-[var(--ink)]">待验收的工程件</strong>，而不是一份答案。它会一本正经地编数据，会拿过时的知识答新问题，会在长任务里悄悄跑偏。这些不是故障，是这类系统的天性——写在说明书里的那种。</p>
+  <p>会验收的人做什么？关键数字，让他给出处；生成的代码，跑一遍再合入；长报告，随机抽三处细节，错一处，全文按降级处理。一句话：</p>
+  <blockquote>不问「AI 说了什么」，问「AI 怎么知道的」。</blockquote>
+  <p>类比还是那个装修：你请了包工头，给了施工手册，办了门禁卡，交钥匙之前，房还是要验的。验收不是不信任，是流程的最后一道工序——省掉这道工序的装修队，你敢住吗？</p>
+
+  <div class="ornament"><span class="serif italic">·  ·  ·</span></div>
+
+  <!-- 结尾 -->
+  <h2>拿四个问题对一遍自己</h2>
+  <p><strong class="font-semibold text-[var(--ink)]">教</strong>——你的常用套路，沉淀成 skill 了吗，还是每次现场口述？</p>
+  <p><strong class="font-semibold text-[var(--ink)]">派</strong>——你的活开始拆给专职智能体了吗，还是全在一个聊天框里？</p>
+  <p><strong class="font-semibold text-[var(--ink)]">接</strong>——AI 碰得到你的真实文件和数据吗，还是隔着一个复制粘贴的窗口？</p>
+  <p><strong class="font-semibold text-[var(--ink)]">验</strong>——交付之前有验收这道工序吗，还是 AI 说啥就是啥？</p>
+  <p>三个「是」、一个「没有」：你已经超过大多数人，但你交付的每一样东西都在裸奔。</p>
+  <p>四个都齐：不管你叫不叫它「会用 AI」，你的产出速度已经换了一个量级。</p>
+  <p>名词会过时——skill、agent、MCP，将来都可能被更好的东西替换。但这四个动作不会过时：教、派、接、验。工具越强，会指挥工具的人，越稀缺。</p>
+
+  <!-- 要点小结 -->
+  <div class="rounded-2xl border border-[var(--line)] bg-white/60 p-6 mt-12">
+    <div class="font-semibold text-[var(--ink)] mb-3">要点小结</div>
+    <ul class="text-[14px] leading-[1.9] text-[#262421] list-none p-0 m-0 space-y-1">
+      <li><span class="font-semibold" style="color:var(--accent)">教（Skills）</span>　把套路沉淀成手册，从「问 AI」到「教 AI」</li>
+      <li><span class="font-semibold" style="color:var(--accent)">派（专家智能体）</span>　从聊天到派活，一次讲清做什么、做成什么样、别碰什么</li>
+      <li><span class="font-semibold" style="color:var(--accent)">接（MCP）</span>　给 AI 办门禁卡，让它碰真实环境，同时写好权限清单</li>
+      <li><span class="font-semibold" style="color:var(--accent)">验（验收）</span>　输出是工程件不是答案，不问「说了什么」，问「怎么知道的」</li>
+    </ul>
+  </div>
+
+  <!-- 延伸阅读 -->
+  <div class="mt-6 text-[13px] leading-[2] text-[var(--mute)]">
+    <div class="text-[11px] font-semibold uppercase tracking-[0.18em] mb-2">延伸阅读</div>
+    <div>· Agent Skills（Anthropic 工程博客）：<a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">equipping-agents-for-the-real-world</a></div>
+    <div>· MCP 官方文档：<a href="https://modelcontextprotocol.io">modelcontextprotocol.io</a></div>
+    <div>· 本刊旧文：《MCP：AI 的 USB-C 接口》</div>
+  </div>
+
+  <!-- 收尾卡：署名 -->
+  <div class="rounded-2xl border border-[var(--line)] bg-white/60 p-6 mt-12 flex items-start gap-4">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" class="shrink-0 mt-0.5" style="color:var(--accent)"><rect x="3" y="5" width="18" height="14"/><path d="M3 6l9 7 9-7"/></svg>
+    <div>
+      <div class="font-semibold text-[var(--ink)] mb-1">出自公众号：码事漫谈</div>
+      <div class="text-[13px] text-[var(--mute)]">一问一答，把 AI 讲成人话。小码提问，波普解答。</div>
+    </div>
+  </div>
+</article>
+</body>
+</html>

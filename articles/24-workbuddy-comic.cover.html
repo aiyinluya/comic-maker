@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>cover · 文字归代码 画面归模型</title>
+<style>
+  :root{
+    --bg:#0B0D10;
+    --grid:#15191F;
+    --tx:#E6E8EB;
+    --tx2:#9AA3AE;
+    --p1:#534AB7; --p2:#3C3489; --p3:#AFA9EC; --p4:#CECBF6; --p5:#EEEDFE;
+    --t1:#0F6E56; --t2:#085041; --t3:#5DCAA5; --t4:#9FE1CB;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    width:1920px; height:1080px; overflow:hidden;
+    background:var(--bg); color:var(--tx);
+    font-family:"Source Han Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+    position:relative;
+  }
+  .grid{
+    position:absolute; inset:0;
+    background-image:
+      linear-gradient(to right, var(--grid) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+    background-size:40px 40px;
+    opacity:.5;
+  }
+  .glow{
+    position:absolute; inset:0;
+    background:radial-gradient(980px 660px at 28% 48%, rgba(83,74,183,.26), transparent 68%),
+               radial-gradient(820px 600px at 84% 58%, rgba(15,110,86,.24), transparent 66%);
+  }
+  .vig{
+    position:absolute; inset:0;
+    background:radial-gradient(1240px 920px at 50% 50%, transparent 44%, rgba(0,0,0,.66) 100%);
+  }
+  /* 四角十字定位标 */
+  .cross{position:absolute; width:26px; height:26px; opacity:.5}
+  .cross::before,.cross::after{content:""; position:absolute; background:var(--tx2)}
+  .cross::before{left:0; top:12px; width:26px; height:1px}
+  .cross::after{top:0; left:12px; width:1px; height:26px}
+  .c1{left:56px; top:56px} .c2{right:56px; top:56px}
+  .c3{left:56px; bottom:56px} .c4{right:56px; bottom:56px}
+
+  .wrap{
+    position:absolute; inset:0;
+    padding:92px 104px 76px;
+    display:grid; grid-template-columns:1fr 700px; gap:72px;
+    align-items:center;
+  }
+
+  /* ---------- 左 ---------- */
+  .kicker{
+    display:inline-block; font-size:19px; letter-spacing:3px; color:var(--t3);
+    border:1px solid rgba(93,202,165,.45); background:rgba(15,110,86,.18);
+    border-radius:5px; padding:7px 16px; margin-bottom:32px;
+  }
+  h1{
+    margin:0; font-size:104px; line-height:1.14; letter-spacing:-3px; font-weight:800;
+    color:#FFFFFF; text-shadow:0 0 60px rgba(175,169,236,.22);
+  }
+  h1 .code{color:var(--p3)}
+  h1 .model{color:var(--t3)}
+  .rule{width:72px; height:3px; background:var(--t3); margin:36px 0 28px; box-shadow:0 0 18px rgba(93,202,165,.7)}
+  .sub{font-size:30px; line-height:1.6; color:var(--tx2); margin:0 0 18px}
+  .sub b{color:#fff; font-weight:600}
+  .tag{font-size:27px; line-height:1.6; color:var(--p4); margin:0}
+  .chips{display:flex; gap:14px; margin-top:52px; flex-wrap:wrap}
+  .chip{
+    display:flex; align-items:center; gap:10px;
+    font-size:20px; color:var(--tx2);
+    border:1px solid #232830; background:rgba(20,24,30,.78);
+    border-radius:999px; padding:9px 20px 9px 16px;
+  }
+  .dot{width:10px; height:10px; border-radius:50%}
+  .d-p{background:var(--p3); box-shadow:0 0 10px var(--p3)}
+  .d-t{background:var(--t3); box-shadow:0 0 10px var(--t3)}
+  .d-g{background:#5F5E5A}
+
+  /* ---------- 右：漫画格 ---------- */
+  .panel{
+    position:relative;
+    border:1px solid #2B3140; border-radius:16px;
+    background:#0F1318; overflow:hidden;
+    box-shadow:0 34px 100px rgba(0,0,0,.6), 0 0 0 1px rgba(83,74,183,.16),
+               0 0 90px rgba(83,74,183,.16);
+  }
+  /* 角标 */
+  .tick{position:absolute; width:20px; height:20px; border:2px solid; z-index:3}
+  .t1a{left:12px; top:12px; border-color:transparent; border-left-color:var(--p3); border-top-color:var(--p3); border-radius:4px 0 0 0}
+  .t1b{right:12px; top:12px; border-color:transparent; border-right-color:var(--p3); border-top-color:var(--p3); border-radius:0 4px 0 0}
+  .t1c{left:12px; bottom:12px; border-color:transparent; border-left-color:var(--t3); border-bottom-color:var(--t3); border-radius:0 0 0 4px}
+  .t1d{right:12px; bottom:12px; border-color:transparent; border-right-color:var(--t3); border-bottom-color:var(--t3); border-radius:0 0 4px 0}
+
+  .zA{position:relative; height:250px; background:linear-gradient(180deg, rgba(83,74,183,.24), rgba(83,74,183,.08))}
+  .zB{position:relative; height:376px; background:linear-gradient(180deg, rgba(15,110,86,.15), rgba(8,80,65,.26))}
+  .divider{border-top:2px dashed rgba(175,169,236,.6); position:relative; height:0}
+  .divider span{
+    position:absolute; right:16px; top:9px;
+    font-size:16px; color:var(--p4); letter-spacing:1px;
+    background:#0F1318; padding:0 12px;
+  }
+  .zlabel{
+    position:absolute; left:26px; top:26px; z-index:2;
+    display:flex; align-items:center; gap:8px;
+    font-size:17px; letter-spacing:1px; border-radius:5px; padding:5px 12px;
+  }
+  .zA .zlabel{color:var(--p4); background:rgba(60,52,137,.6); border:1px solid rgba(175,169,236,.45)}
+  .zB .zlabel{color:var(--t4); background:rgba(8,80,65,.65); border:1px solid rgba(93,202,165,.45)}
+  .zlabel i{width:9px;height:9px;border-radius:50%;display:block}
+  .zA .zlabel i{background:var(--p3); box-shadow:0 0 8px var(--p3)}
+  .zB .zlabel i{background:var(--t3); box-shadow:0 0 8px var(--t3)}
+  svg{display:block; width:100%; height:100%}
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+  <div class="vig"></div>
+  <div class="cross c1"></div><div class="cross c2"></div>
+  <div class="cross c3"></div><div class="cross c4"></div>
+
+  <div class="wrap">
+    <div class="left">
+      <div class="kicker">征 文 稿 · WorkBuddy 频 道</div>
+      <h1>文字归<span class="code">代码</span><br>画面归<span class="model">模型</span></h1>
+      <div class="rule"></div>
+      <p class="sub">我用 <b>WorkBuddy</b> 做出了一个把技术文章画成漫画的项目</p>
+      <p class="tag">生成模型只画空场景，气泡和台词全部由代码画</p>
+      <div class="chips">
+        <div class="chip"><span class="dot d-p"></span>代码绘气泡</div>
+        <div class="chip"><span class="dot d-t"></span>定妆照锁角色</div>
+        <div class="chip"><span class="dot d-t"></span>串行出图</div>
+        <div class="chip"><span class="dot d-g"></span>一格 ≤ 22 字</div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="panel">
+        <div class="tick t1a"></div><div class="tick t1b"></div>
+        <div class="tick t1c"></div><div class="tick t1d"></div>
+
+        <!-- 上：代码画的气泡 -->
+        <div class="zA">
+          <div class="zlabel"><i></i>代码画 · 精确到像素</div>
+          <svg viewBox="0 0 700 250" preserveAspectRatio="none">
+            <rect x="96" y="74" width="420" height="106" rx="32"
+                  fill="rgba(83,74,183,.32)" stroke="#AFA9EC" stroke-width="3"/>
+            <path d="M158 180 L202 180 L172 216 Z" fill="rgba(83,74,183,.32)"
+                  stroke="#AFA9EC" stroke-width="3" stroke-linejoin="round"/>
+            <text x="306" y="140" text-anchor="middle" font-size="30" fill="#EEEDFE"
+                  font-family="Source Han Sans SC,Noto Sans SC,Microsoft YaHei,sans-serif">只叫醒最懂的几个</text>
+            <g stroke="#5DCAA5" stroke-width="1.5" opacity=".9">
+              <line x1="556" y1="74" x2="556" y2="180"/>
+              <line x1="548" y1="74" x2="564" y2="74"/>
+              <line x1="548" y1="180" x2="564" y2="180"/>
+              <line x1="530" y1="127" x2="548" y2="127"/>
+            </g>
+            <text x="586" y="133" font-size="17" fill="#9FE1CB"
+                  font-family="JetBrains Mono,Consolas,monospace">44px</text>
+          </svg>
+        </div>
+
+        <div class="divider"><span>空场景：一个字都不画</span></div>
+
+        <!-- 下：模型画的线稿 -->
+        <div class="zB">
+          <div class="zlabel"><i></i>模型画 · 手绘线稿</div>
+          <svg viewBox="0 0 700 376" preserveAspectRatio="none">
+            <line x1="36" y1="318" x2="664" y2="318" stroke="#5DCAA5" stroke-width="1.5" opacity=".45"/>
+
+            <!-- 小码：戴圆框眼镜的男生 -->
+            <g stroke="#9FE1CB" stroke-width="2.6" fill="none" stroke-linecap="round">
+              <!-- 头发 -->
+              <path d="M154 190 A34 34 0 0 1 222 190"/>
+              <!-- 头 -->
+              <circle cx="188" cy="196" r="34"/>
+              <!-- 圆框眼镜 -->
+              <circle cx="175" cy="200" r="12"/>
+              <circle cx="201" cy="200" r="12"/>
+              <line x1="187" y1="200" x2="189" y2="200"/>
+              <!-- 嘴 -->
+              <path d="M182 216 L194 216"/>
+              <!-- 身体（连帽衫） -->
+              <path d="M188 230 L188 286"/>
+              <path d="M152 262 L188 246 L224 262"/>
+              <path d="M188 286 L170 318"/>
+              <path d="M188 286 L206 318"/>
+            </g>
+
+            <!-- 波普：白色胶囊形小机器人 -->
+            <g stroke="#9FE1CB" stroke-width="2.6" fill="none" stroke-linecap="round">
+              <!-- 天线 -->
+              <line x1="472" y1="152" x2="472" y2="128"/>
+              <circle cx="472" cy="122" r="6" fill="#9FE1CB"/>
+              <!-- 胶囊身体 -->
+              <rect x="408" y="152" width="128" height="166" rx="64"/>
+              <!-- 接缝 -->
+              <line x1="412" y1="206" x2="532" y2="206" stroke-width="1.4" opacity=".55"/>
+              <!-- 眼睛 -->
+              <circle cx="450" cy="182" r="8" fill="#9FE1CB" stroke="none"/>
+              <circle cx="494" cy="182" r="8" fill="#9FE1CB" stroke="none"/>
+              <!-- 胸徽 -->
+              <circle cx="472" cy="252" r="13" stroke="#5DCAA5"/>
+              <circle cx="472" cy="252" r="5" stroke="#5DCAA5" stroke-width="1.4"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

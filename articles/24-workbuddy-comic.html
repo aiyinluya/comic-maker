@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>【征文】我用 WorkBuddy 做出了一个把技术文章画成漫画的项目</title>
+<style>
+  :root{
+    --bg:#0B0D10; --card:#14181E; --line:#232830;
+    --tx:#E6E8EB; --tx2:#9AA3AE; --tx3:#6B7480;
+    --ac:#5DCAA5; --ac2:#AFA9EC;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--tx);
+    font-family:"Source Han Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+    line-height:1.85; font-size:17px;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:64px 28px 96px}
+  .tag{display:inline-block; background:#1E2A24; color:var(--ac); border:1px solid #2C4038;
+       border-radius:4px; font-size:12px; padding:2px 8px; margin-bottom:14px; letter-spacing:1px}
+  h1{font-size:32px; line-height:1.4; margin:0 0 30px; letter-spacing:-.3px}
+  h2{font-size:23px; margin:56px 0 18px; padding-top:22px; border-top:1px solid var(--line)}
+  h2::before{content:""; display:inline-block; width:8px; height:8px; background:var(--ac); margin-right:10px; vertical-align:middle}
+  p{margin:0 0 20px}
+  strong{color:#fff; font-weight:600}
+  ol{margin:0 0 22px; padding-left:22px}
+  ol li{margin-bottom:16px}
+  figure{margin:30px 0 34px}
+  figure img{
+    display:block; width:100%; height:auto;
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+  }
+  figcaption{color:var(--tx3); font-size:13px; margin-top:10px; text-align:center}
+  code{
+    font-family:"JetBrains Mono",Consolas,monospace; font-size:13.5px;
+    color:var(--ac);
+  }
+  p code,li code{background:#151A20; padding:1px 5px; border-radius:3px; white-space:normal}
+  a{color:var(--ac2); text-decoration:none}
+  a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="tag">征文稿 · 待发布</div>
+<h1>【征文】我用 WorkBuddy 做出了一个把技术文章画成漫画的项目</h1>
+
+<p>9 月 15 日，一家叫 TypeSafe AI 的公司发了个模型，名字叫 Jev。它不聊天，不写代码，也不写文章；你拿开放性问题问它，它一概不理。</p>
+<p>可它火了。创办这家公司的是前 OpenAI 研究员 Diogo Almeida，他们还给 Jev 起了个新类别名：System One Model，译过来叫"系统一模型"。几天之内，讨论刷遍了开发者社区。</p>
+<p>我想写它，卡在一个地方：<strong>"系统一模型"这个概念，纯文字讲不利索。</strong> 传统大模型的输出是一段一段文字；Jev 的输出里没有文字——你给它一份状态数据加一组预定义问题，它直接吐出结构化判定和一个概率。这点差别，写下来得两三段，读者读完点头，脑子里还是没画面。</p>
+<p>所以我决定把它画成漫画。可麻烦的是手头没有趁手的工具：现成的 AI 生图一画中文就错字，气泡歪歪扭扭。于是我用 WorkBuddy 做了一个，叫 comic-maker。</p>
+<p>我让它干的，是把整条链路从零搭起来——写脚本、出图、绘气泡、拼装、出图文，全在 WorkBuddy 里跑。现在它每期能稳定产出一篇文字加漫画的技术文章，Jev 这期就是它做的。</p>
+
+<h2>一、画漫画，逼我把话说到点子上</h2>
+
+<p>拿 Jev 举例。</p>
+<p>一格画面就能说清：传送带把状态块送进去，判定牌吐出来。</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/04-jev-p01.jpg" alt="Jev 第 1 格：一个不说话的 AI，凭什么火">
+  <figcaption>Jev 第 1 格</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/05-jev-p02.jpg" alt="Jev 第 2 格：状态进去，判定出来">
+  <figcaption>Jev 第 2 格</figcaption>
+</figure>
+
+<p>再比如"快多少"。官方口径是端到端响应 70 到 500 毫秒，同等智能水平下比 LLM 快 40 到 200 倍。数字好记，可"快"是什么感觉，数字给不了——一格秒表，读者秒懂。</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/06-jev-p05.jpg" alt="Jev 第 5 格：快">
+  <figcaption>Jev 第 5 格</figcaption>
+</figure>
+
+<p>分镜有个硬规矩：每句台词 <strong>≤ 22 字</strong>，一问一答各一句。这条约束反过来逼我——讲不清的点，多数不是画不出来，是我自己没想明白。Jev 那期，我删掉的分镜比留下的多。</p>
+
+<h2>二、做这个项目，最难的一个判断：不让模型写字</h2>
+
+<p>一句话：<strong>生成模型只画没有气泡、没有文字的空场景，气泡和台词全部由代码画。</strong></p>
+<p>早期我让模型连气泡一起画，结果是个盲盒：中文错字、文字溢出格子、字号忽大忽小、气泡正好盖在角色脸上。修一版，换一种错法。根子在于模型画的气泡没有几何保证——你是在跟一个采样过程要排版精度。</p>
+<p>文字改用 Pillow 渲染之后，这几类问题从根上消失了：不会乱码；气泡和文字在同一个坐标系里，不会溢出；字号是全局档位，只会一致。</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/02-panel-raw.jpg" alt="空场景原图：模型只出画面，一个字都不画">
+  <figcaption>同一格的出图原图，画面上没有气泡也没有文字</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/03-panel-final.jpg" alt="绘泡后终版：气泡和台词由代码画上去">
+  <figcaption>代码绘气泡后的终版，上方气泡区是算出来的</figcaption>
+</figure>
+
+<p>角色靠定妆照锁。小码（提问者，黑短发、圆框眼镜、深灰连帽衫）和波普（解答者，白色胶囊形小机器人）共用一张基准图，每次出图前喂回去。</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/01-ref-base.jpg" alt="角色定妆照：小码×波普">
+  <figcaption>定妆照，每次出图前作为参考图传入</figcaption>
+</figure>
+
+<p>这些规矩都是踩出来的，登记在 <code>docs/ROOT-CAUSES.md</code>，从 R1 到 R20。</p>
+
+<h2>三、它现在长什么样：WorkBuddy 里的八步</h2>
+
+<p>跑通之后，我把它做成一个可复用的 Skill，挂在 <code>~/.workbuddy/skills/comic-maker</code>。每期我只给一句话：拿这篇源文章，出一期漫画。它按八步跑完。</p>
+
+<ol>
+  <li><strong>文案先行。</strong> 有现成文章就用 <code>article_to_storyboard.py</code> 出分镜草稿，没有就先写 <code>draft.md</code>。不改完文案不许开画。</li>
+  <li><strong>分镜锁定。</strong> <code>storyboard.md</code> 五列：文件、提问、解答、画面。每句台词 <strong>≤ 22 字</strong>，一问一答各一句。分镜要先给我看，我说 OK 才出图。</li>
+  <li><strong>定妆照。</strong> 老角色直接复用基准图。出图提示词必须<strong>内联完整身份标记</strong>——发型、眼镜、服装、配色逐项写出来。只写"保持参考图造型"必丢眼镜（R1）。</li>
+  <li><strong>转气泡配置。</strong> <code>parse_storyboard.py</code> 产出 <code>bubbles.json</code>，这是全链路的单一事实源。</li>
+  <li><strong>空场景出格。</strong> 这条最容易踩。提示词里禁止出现"气泡""文字""字幕"；还必须带一句"远景小人物"的构图描述——只写"上方留出空白"没用，ImageGen 会以为你要的是背景留白，人物照样占满画面，头顶正好被气泡盖住。然后是串行：一次只出一张，落盘后立刻重命名成 <code>v8-NN.raw.jpg</code>，再出下一张。并行调用会共享输出目录、同名文件互相覆盖，最后一期只剩一张图。</li>
+  <li><strong>出图后自检。</strong> 跑一遍自检脚本，看有没有格的头会伸进气泡区；再逐格看图，确认角色要素齐不齐。不合格就重出这一格。</li>
+  <li><strong>代码绘气泡。</strong> <code>draw_bubbles.py</code> 把所有源图重采样到 1080px 成品宽度，再按 <code>SIZE_TIERS=[44,38,32,26]</code> 逐档试排，第一档能塞进 0.55H 就用。说话人只靠气泡形状区分——小码是圆角矩形带左下尾，波普是椭圆带锯齿尾；不靠字重。</li>
+  <li><strong>拼装出图文。</strong> <code>stack.py</code> 读 <code>stack.json</code>，加标题区、竖拼、加页脚，出 <code>long-manga.jpg</code>；<code>gen_blog.py</code> 再把分镜产成三版：Markdown 图文版、杂志风 HTML、公众号复制版。</li>
+</ol>
+
+<p>八步里最要紧的一处，是出图统一走 <strong>WorkBuddy 内置的 ImageGen</strong>（图生图传 <code>image1</code>）。不用另配出图后端，这套流程才能每期稳定跑下来。</p>
+
+<h2>四、成品：Jev 那期</h2>
+
+<p>TypeSafe 给 Jev 点了三个用法：Agent 路由、上下文压缩、操作放行。这格画的是它想站在 Agent 的马路中间。</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/07-jev-p07.jpg" alt="Jev 第 7 格：三个用法">
+  <figcaption>Jev 第 7 格</figcaption>
+</figure>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/08-jev-p10.jpg" alt="Jev 收尾格">
+  <figcaption>Jev 收尾格</figcaption>
+</figure>
+
+<p>成品是张 1080 宽的竖版长图，公众号直接就能用：</p>
+
+<figure>
+  <img src="assets/24-workbuddy-comic/09-jev-long.jpg" alt="Jev 那期的成品长图">
+  <figcaption>Jev 那期的成品长图</figcaption>
+</figure>
+
+<p><code>stories/</code> 下存着可直接复现的锁定分镜，<code>articles/</code> 下有多篇源文章，都能拿来跑。</p>
+
+<h2>五、还不行的地方</h2>
+
+<p>串行出图那条纪律别图快——我并行过一次，最后一期只剩一张图。</p>
+<p>数据也得自己打折。Jev 那个"快 40 到 200 倍"是 TypeSafe 的官方口径，论文没公开，参数规模、网络结构、训练数据一概没披露，36 氪当时的标题直接问"Jev 真是新范式吗"。所以那期漫画里我写的是"当方向看，别当结论看"。漫画把概念讲清楚是强项，可一个没验证的数字画进画面，比写在段落里更容易被当成定论。</p>
+<p>每期我仍然要验收。它把"每格都盯"变成"看几处"，省掉的是重复劳动，不是判断。</p>
+
+<h2>结尾</h2>
+
+<p>现在的状态是：一篇源文章进去，一张长图加三版图文出来，我只在分镜确认和终检两处插手。</p>
+<p>代码全开源，仓库在这儿：<a href="https://github.com/aiyinluya/comic-maker">https://github.com/aiyinluya/comic-maker</a></p>
+<p>下一步想解决的是最后一公里：漫画现在能直接发文，那能不能直接做成视频？把一格一格推成镜头、配上节奏——这条链路还没做。</p>
+
+</div>
+</body>
+</html>

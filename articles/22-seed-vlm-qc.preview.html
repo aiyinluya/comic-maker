@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>技术文章为什么不能是漫画？</title>
+<style>
+  :root{
+    --bg:#0B0D10; --card:#14181E; --line:#232830;
+    --tx:#E6E8EB; --tx2:#9AA3AE; --tx3:#6B7480;
+    --ac:#5DCAA5; --ac2:#AFA9EC;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--tx);
+    font-family:"Source Han Sans SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+    line-height:1.85; font-size:17px;
+  }
+  .wrap{max-width:820px; margin:0 auto; padding:64px 28px 96px}
+  h1{font-size:34px; line-height:1.35; margin:0 0 18px; letter-spacing:-.4px}
+  .meta{color:var(--tx3); font-size:14px; border-left:3px solid var(--ac); padding-left:14px; margin:0 0 40px}
+  h2{font-size:23px; margin:56px 0 18px; padding-top:22px; border-top:1px solid var(--line)}
+  h2::before{content:""; display:inline-block; width:8px; height:8px; background:var(--ac); margin-right:10px; vertical-align:middle}
+  p{margin:0 0 20px}
+  strong{color:#fff; font-weight:600}
+  em{color:var(--tx2); font-style:normal}
+  figure{margin:30px 0 34px}
+  figure img{
+    display:block; width:100%; height:auto;
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+  }
+  figcaption{color:var(--tx3); font-size:13px; margin-top:10px; text-align:center}
+  pre{
+    background:#0F1318; border:1px solid var(--line); border-left:3px solid var(--ac2);
+    border-radius:8px; padding:18px 20px; overflow-x:auto; margin:26px 0;
+  }
+  code{
+    font-family:"JetBrains Mono",Consolas,monospace; font-size:13.5px;
+    color:var(--ac); line-height:1.75; white-space:pre;
+  }
+  p code,p a{color:var(--ac)}
+  .src{margin-top:56px; padding-top:22px; border-top:1px solid var(--line); color:var(--tx3); font-size:13.5px; line-height:1.9}
+  .src a{color:var(--ac2); word-break:break-all}
+  hr{border:0; border-top:1px solid var(--line); margin:44px 0}
+  a{text-decoration:none}
+  a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>技术文章为什么不能是漫画？我用 Seed-2.1-pro-0915 做了个开源项目来回答</h1>
+<div class="meta">豆包 Seed 征文 · 方向一（Case 向）· 2026-09-23</div>
+
+<p>今天下午这话的第一格刚渲出来，自动质检就在右下角圈了个红框：疑似文字区。</p>
+<p>画面上一个字都没有——我特意要求过一个字都不许画。哪来的文字。</p>
+<p>放大。是一块木纹。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/qc-texture-false-positive.png" alt="质检标记右下角疑似文字区，放大后确认是木纹纹理">
+  <figcaption>质检标出的"疑似文字区"，放大后是一块木纹</figcaption>
+</figure>
+
+<p>OCR 把木头的纹理认成了字。虚惊一场。</p>
+<p>这一周，这种事在 comic-maker 里天天发生。这个项目是拿 Seed-2.1-pro-0915 加豆包工作打磨出来的，前后一周，把技术概念画成一问一答的长漫画：模型负责画，代码负责写，质检负责挑错，我负责最后那个判断。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/long-manga-moe.jpg" alt="MoE 新话成品长图">
+  <figcaption>今天跑完的成品长图：《MoE：为什么大模型里住着一群专家》</figcaption>
+</figure>
+
+<p>为什么偏偏是这三方分工，是被坑出来的，不是我一开始就设计好的。下面把今天跑的这一话从头到尾拆一遍。</p>
+
+<h2>一、漫画真正的价值，是逼你把话说短</h2>
+
+<p>先回答标题那个问题：技术文章为什么要画成漫画。</p>
+<p>不是为了好看。是因为漫画会逼你说人话。</p>
+<p>文字稿里我最爱写这种句子："MoE 通过稀疏激活，在维持模型参数规模的同时显著降低了推理计算开销。"看着通顺，信息也够密，但它没回答任何一个真问题——省在哪？谁在干活？为什么不全上？读者看完点头，然后什么也没记住。</p>
+<p>换成漫画，你只有一格画面、一个气泡、22 个字的额度。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-01-final.jpg" alt="第 1 格：大模型里住着一群专家？">
+  <figcaption>第 1 格</figcaption>
+</figure>
+
+<p>于是只能挑最关键的那个点讲：每次回答，不是所有专家全上，只叫醒最懂的几个。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-02-final.jpg" alt="第 2 格：每次回答，大家全上？不，只叫醒最懂的几个">
+  <figcaption>第 2 格</figcaption>
+</figure>
+
+<p>这一周做下来，我删掉的分镜比留下的多。多数不是画不出来，是我发现自己没法用一句话讲清楚——那说明我没真懂。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-03-final.jpg" alt="第 3 格：省下的算力去哪？养更大的模型，越养越聪明">
+  <figcaption>第 3 格</figcaption>
+</figure>
+
+<p>这条约束，才是漫画对技术写作真正的贡献。</p>
+
+<h2>二、最大的坑：让模型写字</h2>
+
+<p>想法很自然：既然 AI 画图，那气泡和台词当然也让它一起画。一开始我就是这么干的。</p>
+<p>结果是个盲盒。今天乱码，明天气泡溢出格子，后天字正好盖在小码脸上。修一版换一种错法，登记在 <code>docs/ROOT-CAUSES.md</code> 里，从 R1 到 R19。</p>
+<p>转折是我承认了一件事：<strong>让概率模型干需要精确排版的事，是在跟它的工作原理对着干。</strong></p>
+<p>生成每一步都在采样，你却指望它每次把字落在同一个位置、不多不少塞满一行。这不是能力不够，是方向错了。</p>
+<p>所以我把文字层整个拿走，交给代码。台词、气泡、字号、换行、拼装全算出来——不再存在"生成得不好"，只有"算错了"，而算错能复现、能写测试、能彻底修好。现在绘泡统一在 44px 字号档，lint 一跑就知道整话有没有跑偏：</p>
+
+<pre><code>v8-01 ['OK']
+v8-02 ['OK']
+v8-03 ['OK']
+v8-04 ['OK']
+v8-05 ['OK']
+v8-06 ['OK']
+TIER-UNIFORM ['OK 44px ratio 1.00']
+LINT: PASS</code></pre>
+
+<p>也正是在这里，Seed-2.1-pro-0915 让我愣了一下。我让它帮我把绘泡脚本改一版，把仓库脚本和一张分镜草图一起扔过去——它没追着我问一堆需求，自己把代码读了一遍、改了、跑测试给我看。</p>
+<p>这次的差别很关键：它不用"猜"字该排在哪，它改的是代码。写代码本来就是它的强项，而且改完的不确定性有测试兜着。豆包这次把大型代码仓库的理解评测集推高了 12.4%，跨文件定位根因、修 bug 的能力涨了 33%<em>[1]</em>，分数我没先看，是我自己撞上的。</p>
+
+<h2>三、让它画得一样，比让它画得好更难</h2>
+
+<p>第二个坑是确定性。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-04-final.jpg" alt="第 4 格：路由器记考勤，谁不行少派活">
+  <figcaption>第 4 格</figcaption>
+</figure>
+
+<p>同一个角色隔一格就可能换张脸、换件衣服。不是画得难看，是不像同一个人。</p>
+<p>办法一点都不优雅：定妆照加锁参数，每话出图前先把角色的定妆照喂回去，把外观钉住。这些话跑下来，小码一直是黑短发、圆框眼镜、深灰连帽衫，波普一直是那颗橙胸徽，没漂过。</p>
+<p>这不是模型变强了，是我在流程上把它会漂的地方提前堵死了。</p>
+
+<h2>四、画面是概率的，所以必须有东西盯着</h2>
+
+<p>画面归模型、文字归代码之后，还差一件事：谁来确认这一格画对了。</p>
+<p>肉眼不行。一话十格检查二十分钟起步，人会疲劳、会放过。</p>
+<p>所以质检也得自动化：每格出完图，让模型自己回头看——眼镜还在不在、有没有混进文字、有没有水印，结果输出成结构化 JSON 直接进 CI。开头那个红框就是这么来的。</p>
+<p>但别忘了木纹这件事：<strong>质检本身也是模型，一样会犯错。</strong>它把木纹认成文字，我放大一眼排除了；反过来，哪天它漏掉一处真的水印，代价就大多了。</p>
+<p>所以这套流程最后一条规矩是：模型负责标记，人负责确认，宁可多标，不可漏标。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-05-final.jpg" alt="第 5 格：我该记住啥？干活的是少数，付钱的是全部">
+  <figcaption>第 5 格</figcaption>
+</figure>
+
+<p>到这儿才算完整——模型画画，代码保证精确，质检挑错，人做判断。缺任何一环，这条流水线都出不了成品。</p>
+
+<figure>
+  <img src="assets/22-seed-vlm-qc/moe-06-final.jpg" alt="第 6 格：这就是 MoE，花小钱办大事">
+  <figcaption>第 6 格</figcaption>
+</figure>
+
+<p>6 格拼成 1080px 长图，就是开头那张。</p>
+
+<h2>五、Seed-2.1-pro-0915 到底补了哪儿</h2>
+
+<p>生图能力其实早就够了，真缺的是另外两头。</p>
+<p>一头是敢不敢撒谎。工具调用幻觉专项得分从 38.4% 提到 64.8%，搜索幻觉改善接近一半<em>[2]</em>——它不会没查证就编给你，也不会假装把活干完了。这条直接决定我敢不敢把 CI 里的判定交给它。</p>
+<p>另一头是成本。图像和视频推理的 Token 消耗降了 30% 以上<em>[3]</em>，逐格质检从"理论上可行"变成"每天都跑得起"。</p>
+<p>三块拼齐，漫画才从 demo 变成一条能天天跑的流水线。</p>
+<p>不过每话我仍然要人验收。它把"手盯每一步"变成"验收成品"，省掉的是重复劳动，不是判断。木纹那个红框就是提醒：越信它，越要有制度上的那双眼睛。</p>
+
+<h2>结尾</h2>
+
+<p>项目全量开源：<a href="https://github.com/aiyinluya/comic-maker">https://github.com/aiyinluya/comic-maker</a> 。出图、绘泡、质检、博客生成器都在，README 有完整用法，今天这话的复现包在 <code>stories/</code> 下。</p>
+<p>如果 AI 已经能把技术文章画成漫画，那下一个问题也许是：它能不能自己把漫画发出去。这个我还没试。</p>
+
+<div class="src">
+<strong>能力数据来源：</strong><br>
+[1] 新华网报道 <a href="http://imgs.xinhuanet.com/tech/20260916/6c5139a7840145b6b11f0ae9e00d9cb2/c.html">新华网</a> ；搜狐科技 <a href="https://news.sohu.com/a/1077252529_122518389">链接</a><br>
+[2] 搜狐科技（工具调用与搜索幻觉得分）<a href="https://news.sohu.com/a/1077252529_122518389">链接</a><br>
+[3] 今日头条 <a href="http://m.toutiao.com/group/7685983554416755236/">链接</a> ；火山引擎文档 <a href="https://www.volcengine.com/docs/82379/2549861?lang=zh">链接</a>
+</div>
+
+</div>
+</body>
+</html>

@@ -44,6 +44,7 @@
 | 角色设定集 | `gen_sheets.py` | 表情表 / 动作表 / 转面图一键生成（见 assets/characters/） |
 | 漫画博客生成 | `gen_blog.py` | 分镜成品 → 三版博客（MD / 杂志 HTML / 公众号复制版）；`--format panels\|long` 选单格图文交错或长图单图版 |
 | 水印清理 | `strip_watermark.py` | 跨图中值掩膜 + inpaint 清除网关白色水印（R19），掩膜自动缓存复用 |
+| VLM 视觉质检 | `vlm_qc.py` | 逐格调 Seed-2.1-pro-0915 多模态接口（火山方舟 OpenAI 兼容，base64 + JSON 输出模式），查眼镜在位 / 波普要素 / 盖头 / 混进文字 / 水印，输出 `vlm_report.json`；与 `lint.py` 几何质检互补（几何查墨迹，VLM 查语义） |
 | 去 AI 味改稿 | `prompts/de-ai-edit.md` | 博客发布前最后一道改稿工序：三遍法删 AI 模式、注入真实人声（含中文科普语境适配注记） |
 
 全部 19 部成品长图和 6 篇同源文章在 [output/index.html](output/index.html) 总索引页浏览。
