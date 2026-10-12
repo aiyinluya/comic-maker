@@ -59,7 +59,7 @@ def main():
     ap.add_argument("--dirs", nargs="+", required=True, help="含 v8-*.raw.jpg 的 panels 目录")
     ap.add_argument("--inplace", action="store_true", help="覆盖 raw（先备份到 wm-original/）")
     ap.add_argument("--mask", default=None, help="复用指定掩膜 PNG（跳过自动建模）")
-    ap.add_argument("--pattern", default="v8-*.raw.jpg", help="raw 文件名通配（如 *.raw.jpg）")
+    ap.add_argument("--pattern", nargs="+", default=["v8-*.raw.jpg"], help="raw 文件名通配，可传多个（如 *.raw.jpg）")
     ap.add_argument("--win", default="", help="手动指定掩膜窗口 x0,y0,x1,y1（绝对像素，覆盖默认缩放）")
     ap.add_argument("--th", type=float, default=DIFF_TH)
     a = ap.parse_args()
@@ -76,7 +76,7 @@ def main():
     else:
         masks = {}
         for d in dirs:
-            files_d = sorted(d.glob(a.pattern))
+            files_d = sorted({f for pat in a.pattern for f in d.glob(pat)})
             if not files_d:
                 print(f"  no raws in {d.name}, skip mask")
                 continue
@@ -103,7 +103,7 @@ def main():
 
     n_clean = 0
     for d in dirs:
-        for f in sorted(d.glob(a.pattern)):
+        for f in sorted({f for pat in a.pattern for f in d.glob(pat)}):
             img = cv2.imread(str(f))
             mask = shared if a.mask else masks.get(str(d))
             if mask is None:

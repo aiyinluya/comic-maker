@@ -2,51 +2,168 @@
   "char": "xiaoke",
   "identity": "黑色短发 + 圆框眼镜 + 深灰色连帽衫",
   "canon": {
-    "neutral": "表情平静自然，嘴唇轻闭，眼神正视前方",
-    "surprised": "眼睛睁大，眉毛上挑，嘴巴微张，表情惊讶",
-    "frown": "眉头紧锁下压，嘴角向下，神情不满或严肃审视",
-    "smile": "嘴角上扬的温和微笑，眼睛柔和",
-    "laugh": "开怀大笑，眼睛弯成缝，嘴巴大张露出大笑的神态",
-    "think": "一手托腮或手指抵下巴，目光斜向上，若有所思",
-    "shock": "极度震惊：双眼圆睁，嘴巴大张成 O 形，身体后仰",
-    "speechless": "无语：半眯眼平视，嘴角平直，一脸无奈"
+    "neutral": "表情平静放松，嘴唇轻闭成平缓弧线，眼神平视，眉毛自然舒展",
+    "surprised": "双眼瞪到最大，瞳孔缩成小点，眉毛高高挑起，嘴巴张成小圆形，一脸错愕",
+    "frown": "眉头拧成川字紧锁，眉毛斜压向眼，嘴角用力向下撇，眼睛微眯，满脸不满",
+    "smile": "嘴角大幅上扬的温和微笑，嘴唇闭合不张口，眼睛弯成月牙但保持睁开，神态友善愉悦",
+    "laugh": "仰头开怀大笑，嘴巴大张露出上排牙齿，眼睛完全眯成两条缝，脸颊鼓起",
+    "think": "单手托腮，眉头轻皱，眼睛斜向上望，嘴巴抿成一条略歪的线，陷入沉思",
+    "shock": "极度震惊：双眼圆凸瞪出，瞳孔震成小点，嘴巴张大成夸张的 O 形，脸颊下拉",
+    "speechless": "无语：上眼睑下垂遮住半个瞳孔，嘴角平直略向下，眉毛放平，一脸无奈死鱼眼",
+    "confused": "歪头，一边眉毛高高挑起一边眉毛压低，眼睛一大一小，嘴角下撇歪斜，满脸问号式困惑",
+    "smug": "得意：下巴微抬，眼睛半眯上挑，嘴角咧开一边上扬的坏笑，一脸自信",
+    "sad": "失落：眉毛内端上挑成八字泪眉，眼睛下垂湿润无神，嘴角明显向下瘪，肩膀低垂",
+    "worried": "担忧：眉头紧皱上挑，眼睛圆睁略颤，嘴角向下微张，额角一滴汗珠",
+    "angry": "愤怒：眉毛狠狠压成倒八字，眼睛瞪小怒视，咬牙切齿嘴紧抿，额头青筋或井字纹",
+    "excited": "兴奋：双眼放光圆睁，瞳孔闪亮，嘴巴咧到最大露齿欢呼，脸颊泛红",
+    "tired": "疲惫：上眼睑重重垂下遮眼过半，眼下有黑眼圈袋，嘴巴微张打哈欠，头略前倾",
+    "focus": "专注：眉头微聚，双眼锐利直视前方，瞳孔聚焦，嘴巴紧抿成直线"
   },
   "items": {
     "neutral": {
       "file": "neutral.jpg",
       "raw": "neutral.raw.jpg",
-      "phrase": "表情平静自然，嘴唇轻闭，眼神正视前方",
-      "sanity": "面部放松，嘴闭合，无夸张眉眼动作",
-      "generated_at": "2026-10-12 15:16:39",
-      "qc": "pass: visual QC + OCR-verified watermark-free",
-      "registered_at": "2026-10-12 15:28:55"
+      "phrase": "表情平静放松，嘴唇轻闭成平缓弧线，眼神平视，眉毛自然舒展",
+      "sanity": "面部放松，嘴闭合，眉毛平，无夸张眉眼动作",
+      "generated_at": "2026-10-12 15:44:38",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
     },
     "surprised": {
       "file": "surprised.jpg",
       "raw": "surprised.raw.jpg",
-      "phrase": "眼睛睁大，眉毛上挑，嘴巴微张，表情惊讶",
-      "sanity": "双眼明显睁大，眉上挑，嘴微张",
-      "generated_at": "2026-10-12 15:17:13",
-      "qc": "pass: visual QC + OCR-verified watermark-free",
-      "registered_at": "2026-10-12 15:28:55"
+      "phrase": "双眼瞪到最大，瞳孔缩成小点，眉毛高高挑起，嘴巴张成小圆形，一脸错愕",
+      "sanity": "瞳孔缩小+眼白露出+眉毛高挑+圆形小嘴，四项至少三项",
+      "generated_at": "2026-10-12 15:45:16",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
     },
     "frown": {
       "file": "frown.jpg",
       "raw": "frown.raw.jpg",
-      "phrase": "眉头紧锁下压，嘴角向下，神情不满或严肃审视",
-      "sanity": "眉间皱起，嘴角下弯，无笑容",
-      "generated_at": "2026-10-12 15:17:50",
-      "qc": "pass: visual QC + OCR-verified watermark-free",
-      "registered_at": "2026-10-12 15:28:55"
+      "phrase": "眉头拧成川字紧锁，眉毛斜压向眼，嘴角用力向下撇，眼睛微眯，满脸不满",
+      "sanity": "川字眉或八字压眉+嘴角明显下撇，无笑容",
+      "generated_at": "2026-10-12 15:45:57",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
     },
     "smile": {
       "file": "smile.jpg",
       "raw": "smile.raw.jpg",
-      "phrase": "嘴角上扬的温和微笑，眼睛柔和",
-      "sanity": "嘴角明显上扬，眼神柔和，无露齿大笑",
-      "generated_at": "2026-10-12 15:18:28",
-      "qc": "pass: visual QC + OCR-verified watermark-free",
-      "registered_at": "2026-10-12 15:28:55"
+      "phrase": "嘴角大幅上扬的温和微笑，嘴唇闭合不张口，眼睛弯成月牙但保持睁开，神态友善愉悦",
+      "sanity": "嘴角大幅上扬+眼睛弯起（弯月眼或笑纹）",
+      "generated_at": "2026-10-12 16:19:17",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "laugh": {
+      "file": "laugh.jpg",
+      "raw": "laugh.raw.jpg",
+      "phrase": "仰头开怀大笑，嘴巴大张露出上排牙齿，眼睛完全眯成两条缝，脸颊鼓起",
+      "sanity": "眼眯成缝+嘴大张露齿，整体仰头开怀",
+      "generated_at": "2026-10-12 15:47:19",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "think": {
+      "file": "think.jpg",
+      "raw": "think.raw.jpg",
+      "phrase": "单手托腮，眉头轻皱，眼睛斜向上望，嘴巴抿成一条略歪的线，陷入沉思",
+      "sanity": "托腮手+眼神斜向上+抿嘴",
+      "generated_at": "2026-10-12 15:47:59",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "shock": {
+      "file": "shock.jpg",
+      "raw": "shock.raw.jpg",
+      "phrase": "极度震惊：双眼圆凸瞪出，瞳孔震成小点，嘴巴张大成夸张的 O 形，脸颊下拉",
+      "sanity": "夸张 O 形大嘴+圆凸瞪眼（比 surprised 更极端）",
+      "generated_at": "2026-10-12 15:48:39",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "speechless": {
+      "file": "speechless.jpg",
+      "raw": "speechless.raw.jpg",
+      "phrase": "无语：上眼睑下垂遮住半个瞳孔，嘴角平直略向下，眉毛放平，一脸无奈死鱼眼",
+      "sanity": "半遮瞳的死鱼眼+嘴角平直",
+      "generated_at": "2026-10-12 15:49:33",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "confused": {
+      "file": "confused.jpg",
+      "raw": "confused.raw.jpg",
+      "phrase": "歪头，一边眉毛高高挑起一边眉毛压低，眼睛一大一小，嘴角下撇歪斜，满脸问号式困惑",
+      "sanity": "头部倾斜+两眉不对称+嘴角歪斜",
+      "generated_at": "2026-10-12 15:50:24",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "smug": {
+      "file": "smug.jpg",
+      "raw": "smug.raw.jpg",
+      "phrase": "得意：下巴微抬，眼睛半眯上挑，嘴角咧开一边上扬的坏笑，一脸自信",
+      "sanity": "半眯上挑眼+单侧上扬咧嘴坏笑",
+      "generated_at": "2026-10-12 16:19:57",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "sad": {
+      "file": "sad.jpg",
+      "raw": "sad.raw.jpg",
+      "phrase": "失落：眉毛内端上挑成八字泪眉，眼睛下垂湿润无神，嘴角明显向下瘪，肩膀低垂",
+      "sanity": "八字泪眉+眼下垂+嘴角下瘪",
+      "generated_at": "2026-10-12 15:51:40",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "worried": {
+      "file": "worried.jpg",
+      "raw": "worried.raw.jpg",
+      "phrase": "担忧：眉头紧皱上挑，眼睛圆睁略颤，嘴角向下微张，额角一滴汗珠",
+      "sanity": "皱眉上挑+眼圆睁+额角汗珠",
+      "generated_at": "2026-10-12 15:52:18",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "angry": {
+      "file": "angry.jpg",
+      "raw": "angry.raw.jpg",
+      "phrase": "愤怒：眉毛狠狠压成倒八字，眼睛瞪小怒视，咬牙切齿嘴紧抿，额头青筋或井字纹",
+      "sanity": "倒八字压眉+咬牙怒视+井字纹任二",
+      "generated_at": "2026-10-12 15:52:54",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "excited": {
+      "file": "excited.jpg",
+      "raw": "excited.raw.jpg",
+      "phrase": "兴奋：双眼放光圆睁，瞳孔闪亮，嘴巴咧到最大露齿欢呼，脸颊泛红",
+      "sanity": "双眼放光+露齿咧嘴欢呼+腮红",
+      "generated_at": "2026-10-12 15:53:28",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "tired": {
+      "file": "tired.jpg",
+      "raw": "tired.raw.jpg",
+      "phrase": "疲惫：上眼睑重重垂下遮眼过半，眼下有黑眼圈袋，嘴巴微张打哈欠，头略前倾",
+      "sanity": "眼睑重垂+黑眼圈+哈欠",
+      "generated_at": "2026-10-12 15:54:55",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
+    },
+    "focus": {
+      "file": "focus.jpg",
+      "raw": "focus.raw.jpg",
+      "phrase": "专注：眉头微聚，双眼锐利直视前方，瞳孔聚焦，嘴巴紧抿成直线",
+      "sanity": "锐利直视+眉微聚+嘴紧抿",
+      "generated_at": "2026-10-12 15:55:42",
+      "qc": "pass: v2 4x4-sheet visual QC + OCR corner empty (2026-10-12)",
+      "updated_at": "2026-10-12 16:33:28"
     }
-  }
+  },
+  "version": "v2-headshot-16"
 }
