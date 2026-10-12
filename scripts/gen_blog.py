@@ -27,7 +27,7 @@ import sys
 from pathlib import Path
 
 HERE = Path(__file__).parent.parent   # 仓库根（本脚本位于 scripts/ 下）
-_UP_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\autoglm-generate-image-seedream\upload-mix.py"
+_UP_DEFAULT = r"C:\Users\liz-an\AutoClaw\comic\skills\autoglm-generate-image-seedream\upload-mix.py"
 UP = os.environ.get("COMIC_UPLOAD", _UP_DEFAULT)
 
 
@@ -218,7 +218,7 @@ def load_oss_urls(out_id, story, blog_md, offline=False):
 
 def gen_magazine(blog_md, out_id, title, kicker, story, out_dir, mode, offline=False):
     blocks = md_to_html_blocks(blog_md, story, out_dir, out_id, mode, offline)
-    _TPL_DEFAULT = r"C:\Users\liz-an\.openclaw-autoclaw\skills\delivery-artifact\assets\magazine-template.html"
+    _TPL_DEFAULT = r"C:\Users\liz-an\AutoClaw\comic\skills\delivery-artifact\assets\magazine-template.html"
     tpl = Path(os.environ.get("COMIC_MAGAZINE_TPL", _TPL_DEFAULT))
     css = ""
     if tpl.exists():

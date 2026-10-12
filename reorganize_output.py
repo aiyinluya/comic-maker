@@ -11,7 +11,7 @@
 import shutil
 from pathlib import Path
 
-WS = Path(r"C:\Users\liz-an\.openclaw-autoclaw\workspace")
+WS = Path(r"C:\Users\liz-an\AutoClaw\comic")
 CM = WS / "comic-maker"
 OUT = CM / "output"
 LF = OUT / "long-form"
