@@ -59,6 +59,8 @@ def main():
     ap.add_argument("--dirs", nargs="+", required=True, help="含 v8-*.raw.jpg 的 panels 目录")
     ap.add_argument("--inplace", action="store_true", help="覆盖 raw（先备份到 wm-original/）")
     ap.add_argument("--mask", default=None, help="复用指定掩膜 PNG（跳过自动建模）")
+    ap.add_argument("--pattern", default="v8-*.raw.jpg", help="raw 文件名通配（如 *.raw.jpg）")
+    ap.add_argument("--win", default="", help="手动指定掩膜窗口 x0,y0,x1,y1（绝对像素，覆盖默认缩放）")
     ap.add_argument("--th", type=float, default=DIFF_TH)
     a = ap.parse_args()
 
@@ -74,19 +76,21 @@ def main():
     else:
         masks = {}
         for d in dirs:
-            files_d = sorted(d.glob("v8-*.raw.jpg"))
+            files_d = sorted(d.glob(a.pattern))
             if not files_d:
                 print(f"  no raws in {d.name}, skip mask")
                 continue
             probe = cv2.imread(str(files_d[0]), cv2.IMREAD_GRAYSCALE)
             h, w = probe.shape
             key = d.parent.name or d.name   # 用话目录名做键，避免多个 <话>/panels 撞名
-            cache = HERE / "assets" / f"wm-mask-{w}x{h}-{key}.png"
+            cache = HERE / "assets" / (f"wm-mask-{w}x{h}-{key}.png" if not a.win else f"wm-mask-{w}x{h}-{key}-win{a.win.replace(",", "-")}.png")
             if cache.exists():
                 masks[str(d)] = cv2.imread(str(cache), cv2.IMREAD_GRAYSCALE)
                 print(f"  mask cache hit: {cache.name} px={int((masks[str(d)]>0).sum())}")
                 continue
-            if (w, h) == (WIN_DEFAULT[2], WIN_DEFAULT[3]):
+            if a.win:
+                win = tuple(int(v) for v in a.win.split(","))
+            elif (w, h) == (WIN_DEFAULT[2], WIN_DEFAULT[3]):
                 win = WIN_DEFAULT
             else:
                 sx, sy = w / WIN_DEFAULT[2], h / WIN_DEFAULT[3]
@@ -99,7 +103,7 @@ def main():
 
     n_clean = 0
     for d in dirs:
-        for f in sorted(d.glob("v8-*.raw.jpg")):
+        for f in sorted(d.glob(a.pattern)):
             img = cv2.imread(str(f))
             mask = shared if a.mask else masks.get(str(d))
             if mask is None:

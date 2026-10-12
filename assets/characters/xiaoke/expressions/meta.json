@@ -1,0 +1,52 @@
+{
+  "char": "xiaoke",
+  "identity": "黑色短发 + 圆框眼镜 + 深灰色连帽衫",
+  "canon": {
+    "neutral": "表情平静自然，嘴唇轻闭，眼神正视前方",
+    "surprised": "眼睛睁大，眉毛上挑，嘴巴微张，表情惊讶",
+    "frown": "眉头紧锁下压，嘴角向下，神情不满或严肃审视",
+    "smile": "嘴角上扬的温和微笑，眼睛柔和",
+    "laugh": "开怀大笑，眼睛弯成缝，嘴巴大张露出大笑的神态",
+    "think": "一手托腮或手指抵下巴，目光斜向上，若有所思",
+    "shock": "极度震惊：双眼圆睁，嘴巴大张成 O 形，身体后仰",
+    "speechless": "无语：半眯眼平视，嘴角平直，一脸无奈"
+  },
+  "items": {
+    "neutral": {
+      "file": "neutral.jpg",
+      "raw": "neutral.raw.jpg",
+      "phrase": "表情平静自然，嘴唇轻闭，眼神正视前方",
+      "sanity": "面部放松，嘴闭合，无夸张眉眼动作",
+      "generated_at": "2026-10-12 15:16:39",
+      "qc": "pass: visual QC + OCR-verified watermark-free",
+      "registered_at": "2026-10-12 15:28:55"
+    },
+    "surprised": {
+      "file": "surprised.jpg",
+      "raw": "surprised.raw.jpg",
+      "phrase": "眼睛睁大，眉毛上挑，嘴巴微张，表情惊讶",
+      "sanity": "双眼明显睁大，眉上挑，嘴微张",
+      "generated_at": "2026-10-12 15:17:13",
+      "qc": "pass: visual QC + OCR-verified watermark-free",
+      "registered_at": "2026-10-12 15:28:55"
+    },
+    "frown": {
+      "file": "frown.jpg",
+      "raw": "frown.raw.jpg",
+      "phrase": "眉头紧锁下压，嘴角向下，神情不满或严肃审视",
+      "sanity": "眉间皱起，嘴角下弯，无笑容",
+      "generated_at": "2026-10-12 15:17:50",
+      "qc": "pass: visual QC + OCR-verified watermark-free",
+      "registered_at": "2026-10-12 15:28:55"
+    },
+    "smile": {
+      "file": "smile.jpg",
+      "raw": "smile.raw.jpg",
+      "phrase": "嘴角上扬的温和微笑，眼睛柔和",
+      "sanity": "嘴角明显上扬，眼神柔和，无露齿大笑",
+      "generated_at": "2026-10-12 15:18:28",
+      "qc": "pass: visual QC + OCR-verified watermark-free",
+      "registered_at": "2026-10-12 15:28:55"
+    }
+  }
+}
